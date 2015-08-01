@@ -15,28 +15,28 @@ Mesh::Mesh()
 	vboIndices = NULL;
 	vboNormals = NULL;
 	vboCoordTex = NULL;
-    vaoObject = NULL;
+	vaoObject = NULL;
 
-    vertexShader = NULL;
-    fragmentShader = NULL;
-    shaderProgram = NULL;
+	vertexShader = NULL;
+	fragmentShader = NULL;
+	shaderProgram = NULL;
 
 	colorMaterial = QVector3D(0,0,0);
-    currentShader = 0;
+	currentShader = 0;
 }
 
 Mesh::~Mesh()
 {
-    destroyVAO();
-    destroyShaders();
+	destroyVAO();
+	destroyShaders();
 }
 
 void Mesh::drawMesh()
 {
-    makeCurrent();
+	makeCurrent();
 
-    if (!vaoObject)
-        return;
+	if (!vaoObject)
+		return;
 
 	modelView.setToIdentity();
 	modelView.lookAt(camera.eye, camera.at, camera.up);
@@ -45,20 +45,20 @@ void Mesh::drawMesh()
 	modelView.scale(invDiag, invDiag, invDiag);
 	modelView.translate(- midPoint);
 
-    vaoObject->bind();
+	vaoObject->bind();
 	shaderProgram->bind();
 
 	QVector4D ambientProduct = light.ambient * material.ambient;
 	QVector4D diffuseProduct = light.diffuse * material.diffuse;
 	QVector4D specularProduct = light.specular * material.specular;
 
-    /* vboCoordTex->bind();
+	/* vboCoordTex->bind();
 	shaderProgram->enableAttributeArray("vcoordText") ;
 	shaderProgram->setAttributeBuffer("vcoordText", GL_FLOAT, 0, 2, 0);
 
 	colorTexture = new QOpenGLTexture(image);
 	colorTexture->bind(0);
-    shaderProgram->setUniformValue("colorTexture", 0); */
+	shaderProgram->setUniformValue("colorTexture", 0); */
 
 	shaderProgram->setUniformValue("lightPosition", light.position);
 	shaderProgram->setUniformValue("ambientProduct", ambientProduct);
@@ -84,18 +84,18 @@ void Mesh::drawMesh()
 	glDrawElements(GL_TRIANGLES, numFaces * 3, GL_UNSIGNED_INT, 0);
 
 	vboIndices->release();
-    //vboColors->release();
-    //vboVertices->release();
+	//vboColors->release();
+	//vboVertices->release();
 
 
-    /* if(colorTexture) {
+	/* if(colorTexture) {
 		colorTexture->release(0);
 		delete colorTexture;
 		colorTexture = NULL;
-    }
+	}
 
-    vboCoordTex->release();  */
-    vaoObject->release();
+	vboCoordTex->release();  */
+	vaoObject->release();
 	shaderProgram->release();
 
 	update();
@@ -103,11 +103,11 @@ void Mesh::drawMesh()
 
 void Mesh::createVAO()
 {
-    destroyVAO();
+	destroyVAO();
 
-    vaoObject = new QOpenGLVertexArrayObject(this);
-    vaoObject->create();
-    vaoObject->bind();
+	vaoObject = new QOpenGLVertexArrayObject(this);
+	vaoObject->create();
+	vaoObject->bind();
 
 	vboVertices = new QOpenGLBuffer(QOpenGLBuffer::VertexBuffer);
 	vboVertices->create();
@@ -133,13 +133,13 @@ void Mesh::createVAO()
 	delete[] normals;
 	normals = NULL;
 
-    /* vboCoordTex = new QOpenGLBuffer(QOpenGLBuffer::VertexBuffer);
+	/* vboCoordTex = new QOpenGLBuffer(QOpenGLBuffer::VertexBuffer);
 	vboCoordTex->create();
 	vboCoordTex->bind();
 	vboCoordTex->setUsagePattern(QOpenGLBuffer::StaticDraw);
 	vboCoordTex->allocate(texCoords, numVertices * sizeof(QVector2D));
 	delete[] texCoords;
-    texCoords = NULL; */
+	texCoords = NULL; */
 
 	vboIndices = new QOpenGLBuffer(QOpenGLBuffer::IndexBuffer);
 	vboIndices ->create();
@@ -149,7 +149,7 @@ void Mesh::createVAO()
 	delete[] indices;
 	indices = NULL;
 
-    vaoObject->release();
+	vaoObject->release();
 }
 
 void Mesh::destroyVAO()
@@ -178,11 +178,11 @@ void Mesh::destroyVAO()
 		vboIndices = NULL;
 	}
 
-    if (vaoObject) {
-        vaoObject->release();
-        delete vaoObject;
-        vaoObject = NULL;
-    }
+	if (vaoObject) {
+		vaoObject->release();
+		delete vaoObject;
+		vaoObject = NULL;
+	}
 }
 
 void Mesh::setShaderProgram(QOpenGLShaderProgram *shaderProgram)
@@ -194,174 +194,174 @@ void Mesh::setShaderProgram(QOpenGLShaderProgram *shaderProgram)
 
 void Mesh::newMesh(QString fileName)
 {
-    std::ifstream stream;
-    stream.open(fileName.toUtf8(), std::ifstream::in);
+	std::ifstream stream;
+	stream.open(fileName.toUtf8(), std::ifstream::in);
 
-    //std::cerr  << fileName.toStdString() << std::endl;
+	//std::cerr  << fileName.toStdString() << std::endl;
 
-    if (!stream.is_open()) {
-        qWarning("Cannot open file");
-        return;
-    }
+	if (!stream.is_open()) {
+		qWarning("Cannot open file");
+		return;
+	}
 
-    std::string line;
+	std::string line;
 
-    /* Movido pra cá pra elegância do código em si */
+	/* Movido pra cá pra elegância do código em si */
 
-    stream >> line;
-    stream >> numVertices >> numFaces >> line;
+	stream >> line;
+	stream >> numVertices >> numFaces >> line;
 
-    delete[] vertices;
-    vertices = new QVector4D[numVertices];
+	delete[] vertices;
+	vertices = new QVector4D[numVertices];
 
-    delete[] colors;
-    colors = new QVector4D[numVertices];
+	delete[] colors;
+	colors = new QVector4D[numVertices];
 
-    delete[] indices;
-    indices = new uint[numFaces * 3];
+	delete[] indices;
+	indices = new uint[numFaces * 3];
 
-    if (numVertices > 0) {
-        double minLim = std::numeric_limits <double>::min();
-        double maxLim = std::numeric_limits <double>::max();
+	if (numVertices > 0) {
+		double minLim = std::numeric_limits <double>::min();
+		double maxLim = std::numeric_limits <double>::max();
 
-        QVector4D max(minLim , minLim , minLim , 1.0);
-        QVector4D min(maxLim , maxLim , maxLim , 1.0);
+		QVector4D max(minLim , minLim , minLim , 1.0);
+		QVector4D min(maxLim , maxLim , maxLim , 1.0);
 
-        for (uint i = 0; i < numVertices; i++) {
-            double x, y, z;
+		for (uint i = 0; i < numVertices; i++) {
+			double x, y, z;
 
-            stream >> x >> y >> z;
-            max.setX(qMax <double>(max.x(), x));
-            max.setY(qMax <double>(max.y(), y));
-            max.setZ(qMax <double>(max.z(), z));
+			stream >> x >> y >> z;
+			max.setX(qMax <double>(max.x(), x));
+			max.setY(qMax <double>(max.y(), y));
+			max.setZ(qMax <double>(max.z(), z));
 
-            min.setX(qMin <double>(min.x(), x));
-            min.setY(qMin <double>(min.y(), y));
-            min.setZ(qMin <double>(min.z(), z));
+			min.setX(qMin <double>(min.x(), x));
+			min.setY(qMin <double>(min.y(), y));
+			min.setZ(qMin <double>(min.z(), z));
 
-            vertices[i] = QVector4D(x, y, z, 1.0);
+			vertices[i] = QVector4D(x, y, z, 1.0);
 
-            float r1 = rand() / (float) (RAND_MAX);
-            float r2 = rand() / (float) (RAND_MAX);
-            float r3 = rand() / (float) (RAND_MAX);
+			float r1 = rand() / (float) (RAND_MAX);
+			float r2 = rand() / (float) (RAND_MAX);
+			float r3 = rand() / (float) (RAND_MAX);
 
-            colors[i] = QVector4D( r1,
-                           r2,
-                           r3,
-                           1.0);
-        }
+			colors[i] = QVector4D( r1,
+								   r2,
+								   r3,
+								   1.0);
+		}
 
-        midPoint = ((min + max) * 0.5).toVector3D();
+		midPoint = ((min + max) * 0.5).toVector3D();
 
-        invDiag = 1 / (max - min).length();
-    }
+		invDiag = 1 / (max - min).length();
+	}
 
-    for (uint i = 0; i < numFaces; i++) {
+	for (uint i = 0; i < numFaces; i++) {
 
-        uint a, b, c;
-        stream >> line >> a >> b >> c;
+		uint a, b, c;
+		stream >> line >> a >> b >> c;
 
-        indices[i * 3 ] = a;
-        indices[i * 3 + 1] = b;
-        indices[i * 3 + 2] = c;
-    }
+		indices[i * 3 ] = a;
+		indices[i * 3 + 1] = b;
+		indices[i * 3 + 2] = c;
+	}
 
-    /* emit statusBarMessage(QString("Samples %1, Faces %2").
-                  arg(numVertices).arg(numFaces)); */
+	/* emit statusBarMessage(QString("Samples %1, Faces %2").
+				  arg(numVertices).arg(numFaces)); */
 
-    stream.close();
-    calculateNormal();
-    //genTexCoordsCylinder();
+	stream.close();
+	calculateNormal();
+	//genTexCoordsCylinder();
 
-    createVAO();
-    createShaders();
+	createVAO();
+	createShaders();
 }
 
 void Mesh::calculateNormal()
 {
-    normals = new QVector3D[numVertices];
-    QVector3D normalFace, vectorA, vectorB, vectorC;
-    uint i;
+	normals = new QVector3D[numVertices];
+	QVector3D normalFace, vectorA, vectorB, vectorC;
+	uint i;
 
-    for (i = 0; i < numFaces; i++) {
-        // Calcula a normal da face
-        vectorA = QVector3D(vertices[indices[i * 3]]);
-        vectorB = QVector3D(vertices[indices[i * 3 + 1]]);
-        vectorC = QVector3D(vertices[indices[i * 3 + 2]]);
+	for (i = 0; i < numFaces; i++) {
+		// Calcula a normal da face
+		vectorA = QVector3D(vertices[indices[i * 3]]);
+		vectorB = QVector3D(vertices[indices[i * 3 + 1]]);
+		vectorC = QVector3D(vertices[indices[i * 3 + 2]]);
 
-        normalFace = QVector3D
-                ::crossProduct( QVector3D(vectorB - vectorA),
-                        QVector3D(vectorC - vectorA)
-                    ).normalized();
+		normalFace = QVector3D
+				::crossProduct( QVector3D(vectorB - vectorA),
+								QVector3D(vectorC - vectorA)
+								).normalized();
 
-        // Acumula nos vertices
-        normals[indices[i * 3]]		+= normalFace;
-        normals[indices[i * 3 + 1]]	+= normalFace;
-        normals[indices[i * 3 + 2]]	+= normalFace;
-    }
+		// Acumula nos vertices
+		normals[indices[i * 3]]		+= normalFace;
+		normals[indices[i * 3 + 1]]	+= normalFace;
+		normals[indices[i * 3 + 2]]	+= normalFace;
+	}
 
-    for (i = 0; i < numVertices; i++)
-        normals[i].normalize();
+	for (i = 0; i < numVertices; i++)
+		normals[i].normalize();
 
 }
 
 void Mesh::destroyShaders()
 {
-    if (vertexShader) {
-        delete vertexShader;
-        vertexShader = NULL;
-    }
+	if (vertexShader) {
+		delete vertexShader;
+		vertexShader = NULL;
+	}
 
-    if (fragmentShader) {
-        delete fragmentShader;
-        fragmentShader = NULL;
-    }
+	if (fragmentShader) {
+		delete fragmentShader;
+		fragmentShader = NULL;
+	}
 
-    if(shaderProgram) {
-        shaderProgram->release();
-        delete shaderProgram;
-        shaderProgram = NULL;
-    }
+	if(shaderProgram) {
+		shaderProgram->release();
+		delete shaderProgram;
+		shaderProgram = NULL;
+	}
 }
 
 void Mesh::createShaders()
 {
-    destroyShaders();
+	destroyShaders();
 
-    QString vertexShaderFile[] = {
-        ":/shaders/flat.vert",
-        ":/shaders/gouraud.vert",
-        ":/shaders/phong.vert",
-        ":/shaders/toon.vert",
-        ":/shaders/halfphong.vert",
-        ":/shaders/texture.vert",
-        ":/shaders/normal.vert"
-    };
+	QString vertexShaderFile[] = {
+		":/shaders/flat.vert",
+		":/shaders/gouraud.vert",
+		":/shaders/phong.vert",
+		":/shaders/toon.vert",
+		":/shaders/halfphong.vert",
+		":/shaders/texture.vert",
+		":/shaders/normal.vert"
+	};
 
-    QString fragmentShaderFile[] = {
-        ":/shaders/flat.frag",
-        ":/shaders/gouraud.frag",
-        ":/shaders/phong.frag",
-        ":/shaders/toon.frag",
-        ":/shaders/halfphong.frag",
-        ":/shaders/texture.frag",
-        ":/shaders/normal.frag"
-    };
+	QString fragmentShaderFile[] = {
+		":/shaders/flat.frag",
+		":/shaders/gouraud.frag",
+		":/shaders/phong.frag",
+		":/shaders/toon.frag",
+		":/shaders/halfphong.frag",
+		":/shaders/texture.frag",
+		":/shaders/normal.frag"
+	};
 
-    vertexShader = new QOpenGLShader(QOpenGLShader::Vertex);
+	vertexShader = new QOpenGLShader(QOpenGLShader::Vertex);
 
-    if (!vertexShader->compileSourceFile(vertexShaderFile[currentShader]))
-        qWarning() << vertexShader->log();
+	if (!vertexShader->compileSourceFile(vertexShaderFile[currentShader]))
+		qWarning() << vertexShader->log();
 
-    fragmentShader = new QOpenGLShader(QOpenGLShader::Fragment);
+	fragmentShader = new QOpenGLShader(QOpenGLShader::Fragment);
 
-    if (!fragmentShader->compileSourceFile(fragmentShaderFile[currentShader]))
-        qWarning() << fragmentShader->log();
+	if (!fragmentShader->compileSourceFile(fragmentShaderFile[currentShader]))
+		qWarning() << fragmentShader->log();
 
-    shaderProgram = new QOpenGLShaderProgram;
-    shaderProgram->addShader(vertexShader);
-    shaderProgram->addShader(fragmentShader);
+	shaderProgram = new QOpenGLShaderProgram;
+	shaderProgram->addShader(vertexShader);
+	shaderProgram->addShader(fragmentShader);
 
-    if (!shaderProgram->link())
-        qWarning() << shaderProgram->log() << endl;
+	if (!shaderProgram->link())
+		qWarning() << shaderProgram->log() << endl;
 }

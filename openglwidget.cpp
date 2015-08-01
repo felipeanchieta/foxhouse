@@ -14,15 +14,15 @@ OpenGLWidget::OpenGLWidget(QWidget *parent) : QOpenGLWidget(parent)
 	xAngle = yAngle = zAngle = 0;
 	zoom = 0;
 
-//	image = QImage(":/textures/texture_02.png");
-//	image = QImage(":/textures/texture_01.jpg", "JPG");
+	//	image = QImage(":/textures/texture_02.png");
+	//	image = QImage(":/textures/texture_01.jpg", "JPG");
 
 }
 
 OpenGLWidget::~OpenGLWidget()
 {
-    mesh->destroyVAO();
-    mesh->destroyShaders();
+	mesh->destroyVAO();
+	mesh->destroyShaders();
 }
 
 void OpenGLWidget::initializeGL()
@@ -32,19 +32,19 @@ void OpenGLWidget::initializeGL()
 	std::cout << glGetString(GL_VERSION) << std::endl;
 	std::cout << glGetString(GL_SHADING_LANGUAGE_VERSION) << std::endl;
 
-    glEnable(GL_DEPTH_TEST);
+	glEnable(GL_DEPTH_TEST);
 
 	connect(&timer, SIGNAL(timeout()), this, SLOT(animate()));
 	timer.start(5);
 
-    mesh = new Mesh();
-    mesh->newMesh("../foxhouse/armadillo.off");
+	mesh = new Mesh();
+	mesh->newMesh("../foxhouse/armadillo.off");
 
 
 	//loadNewObjects(0);
 
-//	this->createVBO();
-//	this->createShaders();
+	//	this->createVBO();
+	//	this->createShaders();
 }
 
 void OpenGLWidget::resizeGL(int w, int h)
@@ -52,7 +52,7 @@ void OpenGLWidget::resizeGL(int w, int h)
 	glViewport(0, 0, w, h);
 	mesh->projectionMatrix.setToIdentity();
 	mesh->projectionMatrix.perspective(60.0, static_cast<qreal>(w)/
-					   static_cast<qreal>(h), 0.1, 20.0);
+									   static_cast<qreal>(h), 0.1, 20.0);
 	trackBall.resizeViewport(w, h);
 	update();
 }
@@ -135,15 +135,15 @@ void OpenGLWidget::keyPressEvent(QKeyEvent *event)
 void OpenGLWidget::loadNewObjects(int i)
 {
 	switch (i) {
-    case ARMADILLO:
+	case ARMADILLO:
 		break;
 
 	default:
 		break;
 	}
 
-    mesh->createVAO();
-    mesh->createShaders();
+	mesh->createVAO();
+	mesh->createShaders();
 	update();
 }
 

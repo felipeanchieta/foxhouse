@@ -16,5 +16,5 @@ MainWindow::~MainWindow()
 void MainWindow::showAboutBox()
 {
 	QMessageBox::about(this, "About",
-			   "Made by Felipe Anchieta at a CG class");
+					   "Made by Felipe Anchieta at a CG class");
 }

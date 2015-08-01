@@ -41,7 +41,7 @@ signals:
 
 private slots:
 	void toggleBackgroundColor(bool);
-    void animate(); void loadNewObjects(int i);
+	void animate(); void loadNewObjects(int i);
 
 
 private:

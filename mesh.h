@@ -21,15 +21,15 @@ public:
 	~Mesh();
 	void drawMesh();
 
-    QOpenGLShader *vertexShader;
-    QOpenGLShader *fragmentShader;
+	QOpenGLShader *vertexShader;
+	QOpenGLShader *fragmentShader;
 
 	QOpenGLBuffer *vboVertices;
 	QOpenGLBuffer *vboIndices;
 	QOpenGLBuffer *vboColors;
 	QOpenGLBuffer *vboNormals;
 	QOpenGLBuffer *vboCoordTex;
-    QOpenGLVertexArrayObject *vaoObject;
+	QOpenGLVertexArrayObject *vaoObject;
 
 	QOpenGLTexture *texture;
 	QOpenGLTexture *colorTexture;
@@ -55,15 +55,15 @@ public:
 	QVector3D colorMaterial;
 	QVector2D *texCoords;
 
-    void createVAO();
-    void destroyVAO();
-    void newMesh(QString fileName);
-    void createShaders();
-    void destroyShaders();
-    void calculateNormal();
+	void createVAO();
+	void destroyVAO();
+	void newMesh(QString fileName);
+	void createShaders();
+	void destroyShaders();
+	void calculateNormal();
 	void setShaderProgram(QOpenGLShaderProgram *shaderProgram);
 
-    int currentShader;
+	int currentShader;
 };
 
 #endif // MESH_H
