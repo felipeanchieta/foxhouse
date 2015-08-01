@@ -33,9 +33,10 @@ Mesh::~Mesh()
 
 void Mesh::drawMesh()
 {
-	makeCurrent();
 
-	if (!vaoObject)
+	glClear(GL_COLOR_BUFFER_BIT);
+
+	if (!vboVertices)
 		return;
 
 	modelView.setToIdentity();
@@ -45,8 +46,9 @@ void Mesh::drawMesh()
 	modelView.scale(invDiag, invDiag, invDiag);
 	modelView.translate(- midPoint);
 
-	vaoObject->bind();
 	shaderProgram->bind();
+	vaoObject->bind();
+
 
 	QVector4D ambientProduct = light.ambient * material.ambient;
 	QVector4D diffuseProduct = light.diffuse * material.diffuse;
@@ -113,7 +115,7 @@ void Mesh::createVAO()
 	vboVertices->create();
 	vboVertices->bind();
 	vboVertices->setUsagePattern(QOpenGLBuffer::StaticDraw);
-	vboVertices->allocate(vertices , numVertices * sizeof(QVector4D));
+	vboVertices->allocate(vertices, numVertices * sizeof(QVector4D));
 	delete[] vertices;
 	vertices = NULL;
 
@@ -121,6 +123,7 @@ void Mesh::createVAO()
 	vboColors->create();
 	vboColors->bind();
 	vboColors->setUsagePattern(QOpenGLBuffer::StaticDraw);
+	// 4 = numVertices
 	vboColors->allocate(colors, numVertices * sizeof(QVector4D));
 	delete[] colors;
 	colors = NULL;
@@ -129,7 +132,7 @@ void Mesh::createVAO()
 	vboNormals->create();
 	vboNormals->bind();
 	vboNormals->setUsagePattern(QOpenGLBuffer::StaticDraw);
-	vboNormals->allocate(normals, numVertices * sizeof(QVector3D));
+	vboNormals->allocate(normals, numFaces * sizeof(QVector3D));
 	delete[] normals;
 	normals = NULL;
 
@@ -145,6 +148,7 @@ void Mesh::createVAO()
 	vboIndices ->create();
 	vboIndices ->bind();
 	vboIndices ->setUsagePattern(QOpenGLBuffer::StaticDraw);
+	// 2 = numFaces
 	vboIndices ->allocate(indices, numFaces * 3 * sizeof (unsigned int));
 	delete[] indices;
 	indices = NULL;
@@ -194,7 +198,7 @@ void Mesh::setShaderProgram(QOpenGLShaderProgram *shaderProgram)
 
 void Mesh::newMesh(QString fileName)
 {
-	std::ifstream stream;
+	 std::ifstream stream;
 	stream.open(fileName.toUtf8(), std::ifstream::in);
 
 	//std::cerr  << fileName.toStdString() << std::endl;
@@ -206,7 +210,6 @@ void Mesh::newMesh(QString fileName)
 
 	std::string line;
 
-	/* Movido pra cá pra elegância do código em si */
 
 	stream >> line;
 	stream >> numVertices >> numFaces >> line;
@@ -266,12 +269,11 @@ void Mesh::newMesh(QString fileName)
 		indices[i * 3 + 2] = c;
 	}
 
-	/* emit statusBarMessage(QString("Samples %1, Faces %2").
-				  arg(numVertices).arg(numFaces)); */
+//	emit statusBarMessage(QString("Samples %1, Faces %2").arg(numVertices).arg(numFaces));
 
 	stream.close();
 	calculateNormal();
-	//genTexCoordsCylinder();
+	genTexCoordsCylinder();
 
 	createVAO();
 	createShaders();
@@ -364,4 +366,24 @@ void Mesh::createShaders()
 
 	if (!shaderProgram->link())
 		qWarning() << shaderProgram->log() << endl;
+}
+
+void Mesh::genTexCoordsCylinder()
+{
+	if(texCoords)
+		delete [] texCoords ;
+	// Compute minimum and maximum values
+	float fmax = std::numeric_limits<float>::max();
+	float minz = fmax ;
+	float maxz = - fmax ;
+	for(int i =0; i < numVertices ; ++ i) {
+		if(vertices[i]. z()< minz)minz = vertices[i]. z();
+		if(vertices[i]. z()> maxz)maxz = vertices[i]. z();
+	}
+	texCoords = new QVector2D[numVertices];
+	for(int i =0; i < numVertices ; ++ i) { // https :// en . wikipedia . org / wiki / Atan2
+		float s =(atan2(vertices[i].y(), vertices[i].x())+M_PI)/(2*M_PI);
+		float t = 1.0f -(vertices[i].z()- minz)/(maxz - minz);
+		texCoords[i] = QVector2D(s,t);
+	}
 }

@@ -14,6 +14,9 @@ OpenGLWidget::OpenGLWidget(QWidget *parent) : QOpenGLWidget(parent)
 	xAngle = yAngle = zAngle = 0;
 	zoom = 0;
 
+	mesh = new Mesh();
+
+
 	//	image = QImage(":/textures/texture_02.png");
 	//	image = QImage(":/textures/texture_01.jpg", "JPG");
 
@@ -21,8 +24,8 @@ OpenGLWidget::OpenGLWidget(QWidget *parent) : QOpenGLWidget(parent)
 
 OpenGLWidget::~OpenGLWidget()
 {
-	mesh->destroyVAO();
-	mesh->destroyShaders();
+	delete mesh;
+	mesh = NULL;
 }
 
 void OpenGLWidget::initializeGL()
@@ -34,17 +37,12 @@ void OpenGLWidget::initializeGL()
 
 	glEnable(GL_DEPTH_TEST);
 
+	mesh->newMesh("../foxhouse/armadillo.off");
+
 	connect(&timer, SIGNAL(timeout()), this, SLOT(animate()));
 	timer.start(5);
 
-	mesh = new Mesh();
-	mesh->newMesh("../foxhouse/armadillo.off");
-
-
 	//loadNewObjects(0);
-
-	//	this->createVBO();
-	//	this->createShaders();
 }
 
 void OpenGLWidget::resizeGL(int w, int h)
@@ -66,8 +64,8 @@ void OpenGLWidget::paintGL()
 	else
 		glClearColor(0, 0, 0, 1);
 
-	mesh->setShaderProgram(shaderProgram);
 	mesh->drawMesh();
+	update();
 }
 
 void OpenGLWidget::toggleBackgroundColor(bool changeBColor)

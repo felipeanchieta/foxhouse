@@ -62,6 +62,7 @@ public:
 	void destroyShaders();
 	void calculateNormal();
 	void setShaderProgram(QOpenGLShaderProgram *shaderProgram);
+	void genTexCoordsCylinder();
 
 	int currentShader;
 };
