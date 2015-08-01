@@ -1,0 +1,24 @@
+<RCC>
+    <qresource prefix="/shaders">
+        <file>vshader1.glsl</file>
+        <file>fshader1.glsl</file>
+        <file>fshader.glsl</file>
+        <file>vshader.glsl</file>
+        <file>gouraud.vert</file>
+        <file>gouraud.frag</file>
+        <file>phong.vert</file>
+        <file>phong.frag</file>
+        <file>flat.frag</file>
+        <file>flat.vert</file>
+        <file>toon.frag</file>
+        <file>toon.vert</file>
+        <file>halfphong.frag</file>
+        <file>halfphong.vert</file>
+        <file>texture.frag</file>
+        <file>texture.vert</file>
+    </qresource>
+    <qresource prefix="/textures">
+        <file>texture_01.jpg</file>
+        <file>texture_02.png</file>
+    </qresource>
+</RCC>
