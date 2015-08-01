@@ -5,10 +5,10 @@
 int main(int argc, char *argv[])
 {
 	QSurfaceFormat format;
-//	format.setVersion(4, 1);
+    format.setVersion(3, 3);
 	format.setDepthBufferSize(24);
 	format.setSamples(4);
-	format.setProfile(QSurfaceFormat::CompatibilityProfile);
+    format.setProfile(QSurfaceFormat::CoreProfile);
 	QSurfaceFormat::setDefaultFormat(format);
 
 	QApplication a(argc, argv);

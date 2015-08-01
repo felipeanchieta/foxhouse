@@ -41,23 +41,8 @@ signals:
 
 private slots:
 	void toggleBackgroundColor(bool);
-	void showFileOpenDialog();
-	void changeDiagonal(bool);
-	void changeShader(int);
-	void animate();
-	void loadNewObjects(int);
+    void animate(); void loadNewObjects(int i);
 
-	void centralizeObject(bool);
-	void scaleObject(bool);
-	void rotateX(int);
-	void rotateY(int);
-	void rotateZ(int);
-
-	void Rchanged(int);
-	void Gchanged(int);
-	void Bchanged(int);
-
-	void lightChanged(int);
 
 private:
 
@@ -122,18 +107,6 @@ public:
 	void resizeGL(int, int);
 	void paintGL();
 
-	 /*void createVBOs();
-	void destroyVBOs(); */
-
-	void createShaders();
-	void destroyShaders();
-
-	void createTexture(const QString &imagePath);
-	void genTexCoordsCylinder();
-
-	void readOFFFile(const QString &fileName);
-
-	void calculateNormal();
 };
 
 #endif // OPENGLWIDGET_H

@@ -5,10 +5,14 @@
 #include <QOpenGLFunctions>
 #include <QOpenGLWidget>
 
+#include <iostream>
+#include <fstream>
+
 #include <trackball.h>
 #include <camera.h>
 #include <material.h>
 #include <light.h>
+
 
 class Mesh : public QOpenGLWidget
 {
@@ -17,11 +21,16 @@ public:
 	~Mesh();
 	void drawMesh();
 
+    QOpenGLShader *vertexShader;
+    QOpenGLShader *fragmentShader;
+
 	QOpenGLBuffer *vboVertices;
 	QOpenGLBuffer *vboIndices;
 	QOpenGLBuffer *vboColors;
 	QOpenGLBuffer *vboNormals;
 	QOpenGLBuffer *vboCoordTex;
+    QOpenGLVertexArrayObject *vaoObject;
+
 	QOpenGLTexture *texture;
 	QOpenGLTexture *colorTexture;
 	QOpenGLTexture *colorTextureLayer;
@@ -46,10 +55,15 @@ public:
 	QVector3D colorMaterial;
 	QVector2D *texCoords;
 
-	void createVBO();
-	void destroyVBO();
-
+    void createVAO();
+    void destroyVAO();
+    void newMesh(QString fileName);
+    void createShaders();
+    void destroyShaders();
+    void calculateNormal();
 	void setShaderProgram(QOpenGLShaderProgram *shaderProgram);
+
+    int currentShader;
 };
 
 #endif // MESH_H
