@@ -53,7 +53,7 @@ private:
 
 protected:
 
-	Mesh *mesh, *ground;
+	Mesh *mesh[10];
 
 
 public:

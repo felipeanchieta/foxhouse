@@ -14,9 +14,8 @@ OpenGLWidget::OpenGLWidget(QWidget *parent) : QOpenGLWidget(parent)
 	xAngle = yAngle = zAngle = 0;
 
 
-	mesh = new Mesh();
-	ground = new Mesh();
-
+	for (int i = 0; i < 10; i++)
+		mesh[i] = new Mesh();
 
 	//	image = QImage(":/textures/texture_02.png");
 	//	image = QImage(":/textures/texture_01.jpg", "JPG");
@@ -25,8 +24,8 @@ OpenGLWidget::OpenGLWidget(QWidget *parent) : QOpenGLWidget(parent)
 
 OpenGLWidget::~OpenGLWidget()
 {
-	delete mesh;
-	mesh = NULL;
+	delete mesh[0];
+	mesh[0] = NULL;
 }
 
 void OpenGLWidget::initializeGL()
@@ -38,8 +37,8 @@ void OpenGLWidget::initializeGL()
 
 	glEnable(GL_DEPTH_TEST);
 
-	mesh->newMesh("../foxhouse/armadillo.off");
-	//ground->newMesh("../foxhouse/sun.off");
+	mesh[0]->newMesh("../foxhouse/fox.off");
+	//ground->newmesh[0]("../foxhouse/sun.off");
 
 	connect(&timer, SIGNAL(timeout()), this, SLOT(animate()));
 	timer.start(5);
@@ -50,10 +49,10 @@ void OpenGLWidget::initializeGL()
 void OpenGLWidget::resizeGL(int w, int h)
 {
 	glViewport(0, 0, w, h);
-	mesh->projectionMatrix.setToIdentity();
-	mesh->projectionMatrix.perspective(60.0, static_cast<qreal>(w)/
+	mesh[0]->projectionMatrix.setToIdentity();
+	mesh[0]->projectionMatrix.perspective(60.0, static_cast<qreal>(w)/
 									   static_cast<qreal>(h), 0.1, 20.0);
-	trackBall.resizeViewport(w, h);
+	mesh[0]->trackBall.resizeViewport(w, h);
 	update();
 }
 
@@ -66,7 +65,7 @@ void OpenGLWidget::paintGL()
 	else
 		glClearColor(0, 0, 0, 1);
 
-	mesh->drawMesh();
+	mesh[0]->drawMesh();
 	//ground->drawMesh();
 	update();
 }
@@ -85,25 +84,26 @@ void OpenGLWidget::animate()
 
 void OpenGLWidget::mouseMoveEvent(QMouseEvent *event)
 {
-	mesh->trackBall.mouseMove(event->localPos());
+	mesh[0]->trackBall.mouseMove(event->localPos());
 }
 
 void OpenGLWidget::mousePressEvent(QMouseEvent *event)
 {
 	if (event->button() & Qt::LeftButton)
-		mesh->trackBall.mousePress(event->localPos());
+		mesh[0]->trackBall.mousePress(event->localPos());
 }
 
 void OpenGLWidget::mouseReleaseEvent(QMouseEvent *event)
 {
 	if (event->button() == Qt::LeftButton)
-		mesh->trackBall.mouseRelease(event->localPos());
+		mesh[0]->trackBall.mouseRelease(event->localPos());
 
 }
 
 void OpenGLWidget::wheelEvent(QWheelEvent *event)
 {
-//	zoom += 0.001 * event->delta();
+	mesh[0]->zoomEW += 0.001 * event->delta();
+	mesh[0]->zoomNS += 0.001 * event->delta();
 }
 
 
@@ -120,29 +120,29 @@ void OpenGLWidget::keyPressEvent(QKeyEvent *event)
 	case Qt::Key_W:
 	case Qt::Key_Up:
 		/* north */
-		mesh->zoomNS += 0.1f;
-		mesh->drawMesh();
+		mesh[0]->zoomNS += 0.1f;
+		mesh[0]->drawMesh();
 		break;
 
 	case Qt::Key_S:
 	case Qt::Key_Down:
 		/* south */
-		mesh->zoomNS -= 0.1f;
-		mesh->drawMesh();
+		mesh[0]->zoomNS -= 0.1f;
+		mesh[0]->drawMesh();
 		break;
 
 	case Qt::Key_D:
 	case Qt::Key_Right:
 		/* east */
-		mesh->zoomEW -= 0.1f;
-		mesh->drawMesh();
+		mesh[0]->zoomEW -= 0.1f;
+		mesh[0]->drawMesh();
 		break;
 
 	case Qt::Key_A:
 	case Qt::Key_Left:
 		/* west */
-		mesh->zoomEW += 0.1f;
-		mesh->drawMesh();
+		mesh[0]->zoomEW += 0.1f;
+		mesh[0]->drawMesh();
 		break;
 
 	default:
@@ -175,8 +175,8 @@ void OpenGLWidget::loadNewObjects(int i)
 		break;
 	}
 
-	mesh->createVAO();
-	mesh->createShaders();
+	mesh[0]->createVAO();
+	mesh[0]->createShaders();
 	update();
 }
 
