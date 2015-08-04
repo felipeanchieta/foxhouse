@@ -12,9 +12,10 @@ OpenGLWidget::OpenGLWidget(QWidget *parent) : QOpenGLWidget(parent)
 	_centralizeObject = false;
 	blackBackground = false;
 	xAngle = yAngle = zAngle = 0;
-	zoom = 0;
+
 
 	mesh = new Mesh();
+	ground = new Mesh();
 
 
 	//	image = QImage(":/textures/texture_02.png");
@@ -38,6 +39,7 @@ void OpenGLWidget::initializeGL()
 	glEnable(GL_DEPTH_TEST);
 
 	mesh->newMesh("../foxhouse/armadillo.off");
+	//ground->newMesh("../foxhouse/sun.off");
 
 	connect(&timer, SIGNAL(timeout()), this, SLOT(animate()));
 	timer.start(5);
@@ -65,6 +67,7 @@ void OpenGLWidget::paintGL()
 		glClearColor(0, 0, 0, 1);
 
 	mesh->drawMesh();
+	//ground->drawMesh();
 	update();
 }
 
@@ -82,25 +85,25 @@ void OpenGLWidget::animate()
 
 void OpenGLWidget::mouseMoveEvent(QMouseEvent *event)
 {
-	trackBall.mouseMove(event->localPos());
+	mesh->trackBall.mouseMove(event->localPos());
 }
 
 void OpenGLWidget::mousePressEvent(QMouseEvent *event)
 {
 	if (event->button() & Qt::LeftButton)
-		trackBall.mousePress(event->localPos());
+		mesh->trackBall.mousePress(event->localPos());
 }
 
 void OpenGLWidget::mouseReleaseEvent(QMouseEvent *event)
 {
 	if (event->button() == Qt::LeftButton)
-		trackBall.mouseRelease(event->localPos());
+		mesh->trackBall.mouseRelease(event->localPos());
 
 }
 
 void OpenGLWidget::wheelEvent(QWheelEvent *event)
 {
-	zoom += 0.001 * event->delta();
+//	zoom += 0.001 * event->delta();
 }
 
 
@@ -117,21 +120,29 @@ void OpenGLWidget::keyPressEvent(QKeyEvent *event)
 	case Qt::Key_W:
 	case Qt::Key_Up:
 		/* north */
+		mesh->zoomNS += 0.1f;
+		mesh->drawMesh();
 		break;
 
 	case Qt::Key_S:
 	case Qt::Key_Down:
 		/* south */
+		mesh->zoomNS -= 0.1f;
+		mesh->drawMesh();
 		break;
 
 	case Qt::Key_D:
 	case Qt::Key_Right:
 		/* east */
+		mesh->zoomEW -= 0.1f;
+		mesh->drawMesh();
 		break;
 
 	case Qt::Key_A:
 	case Qt::Key_Left:
 		/* west */
+		mesh->zoomEW += 0.1f;
+		mesh->drawMesh();
 		break;
 
 	default:

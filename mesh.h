@@ -47,7 +47,7 @@ public:
 	Camera camera;
 	Material material;
 	Light light;
-	double zoom, invDiag;
+	double zoomNS, zoomEW, invDiag, angle;
 	QOpenGLShaderProgram *shaderProgram;
 
 	TrackBall trackBall;

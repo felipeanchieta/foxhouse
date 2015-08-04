@@ -22,6 +22,7 @@ Mesh::Mesh()
 	shaderProgram = NULL;
 
 	colorMaterial = QVector3D(0,0,0);
+	angle = .0f;
 	currentShader = 0;
 }
 
@@ -34,15 +35,16 @@ Mesh::~Mesh()
 void Mesh::drawMesh()
 {
 
-	glClear(GL_COLOR_BUFFER_BIT);
+	/* glClear(GL_COLOR_BUFFER_BIT); */
 
 	if (!vboVertices)
 		return;
 
 	modelView.setToIdentity();
 	modelView.lookAt(camera.eye, camera.at, camera.up);
-	modelView.translate(0, 0, zoom);
+	modelView.translate(zoomEW, 0, zoomNS);
 	modelView.rotate(trackBall.getRotation());
+	//modelView.rotate(angle, QVector3D(1, 1, 0));
 	modelView.scale(invDiag, invDiag, invDiag);
 	modelView.translate(- midPoint);
 

@@ -53,7 +53,7 @@ private:
 
 protected:
 
-	Mesh *mesh;
+	Mesh *mesh, *ground;
 
 
 public:
@@ -84,7 +84,7 @@ public:
 
 	QMatrix4x4 modelView, projectionMatrix;
 	QVector3D midPoint; */
-	double invDiag, zoom;
+	//double invDiag, zoom;
 
 	QTimer timer;
 	TrackBall trackBall;
