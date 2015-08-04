@@ -17,6 +17,9 @@ OpenGLWidget::OpenGLWidget(QWidget *parent) : QOpenGLWidget(parent)
 	for (int i = 0; i < 10; i++)
 		mesh[i] = new Mesh();
 
+	mesh[0]->material.diffuse = QVector4D(0.8f, 0.2f, 0.2f, 0.8f);
+	mesh[1]->material.diffuse = QVector4D(1, 1, 1, 1);
+
 	//	image = QImage(":/textures/texture_02.png");
 	//	image = QImage(":/textures/texture_01.jpg", "JPG");
 
@@ -24,8 +27,12 @@ OpenGLWidget::OpenGLWidget(QWidget *parent) : QOpenGLWidget(parent)
 
 OpenGLWidget::~OpenGLWidget()
 {
-	delete mesh[0];
-	mesh[0] = NULL;
+
+	for (int i = 0; i < 10; i++) {
+		delete mesh[i];
+		mesh[i] = NULL;
+	}
+
 }
 
 void OpenGLWidget::initializeGL()
@@ -38,6 +45,7 @@ void OpenGLWidget::initializeGL()
 	glEnable(GL_DEPTH_TEST);
 
 	mesh[0]->newMesh("../foxhouse/fox.off");
+	mesh[1]->newMesh("../foxhouse/chao.off");
 	//ground->newmesh[0]("../foxhouse/sun.off");
 
 	connect(&timer, SIGNAL(timeout()), this, SLOT(animate()));
@@ -52,6 +60,11 @@ void OpenGLWidget::resizeGL(int w, int h)
 	mesh[0]->projectionMatrix.setToIdentity();
 	mesh[0]->projectionMatrix.perspective(60.0, static_cast<qreal>(w)/
 									   static_cast<qreal>(h), 0.1, 20.0);
+
+	mesh[1]->projectionMatrix.setToIdentity();
+	mesh[1]->projectionMatrix.perspective(60.0, static_cast<qreal>(w)/
+									   static_cast<qreal>(h), 0.1, 20.0);
+
 	mesh[0]->trackBall.resizeViewport(w, h);
 	update();
 }
@@ -59,13 +72,10 @@ void OpenGLWidget::resizeGL(int w, int h)
 void OpenGLWidget::paintGL()
 {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-	if (!blackBackground)
-		glClearColor(1, 1, 1, 1);
-	else
-		glClearColor(0, 0, 0, 1);
+	glClearColor(0.92f, 0.95f, 0.98f, 1.0f);
 
 	mesh[0]->drawMesh();
+	mesh[1]->drawMesh();
 	//ground->drawMesh();
 	update();
 }
@@ -177,10 +187,9 @@ void OpenGLWidget::loadNewObjects(int i)
 
 	mesh[0]->createVAO();
 	mesh[0]->createShaders();
+
+	mesh[1]->createVAO();
+	mesh[1]->createShaders();
+
 	update();
 }
-
-/* enum {
-		ARMADILLO, BEETLE, BUNNY, CAMEL, ELEPHANT, ELK, MANNEQUIN, MUSHROOM,
-		PEAR, PIG, SPHERE, TORUS
-	};*/
