@@ -107,9 +107,33 @@ void OpenGLWidget::wheelEvent(QWheelEvent *event)
 void OpenGLWidget::keyPressEvent(QKeyEvent *event)
 {
 	switch (event->key()) {
+	/* Escape */
 	case Qt::Key_Escape:
 		quick_exit(0);
 		break;
+
+	/* Movimentação da câmera */
+
+	case Qt::Key_W:
+	case Qt::Key_Up:
+		/* north */
+		break;
+
+	case Qt::Key_S:
+	case Qt::Key_Down:
+		/* south */
+		break;
+
+	case Qt::Key_D:
+	case Qt::Key_Right:
+		/* east */
+		break;
+
+	case Qt::Key_A:
+	case Qt::Key_Left:
+		/* west */
+		break;
+
 	default:
 		break;
 	}
