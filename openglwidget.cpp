@@ -18,7 +18,7 @@ OpenGLWidget::OpenGLWidget(QWidget *parent) : QOpenGLWidget(parent)
 		mesh[i] = new Mesh();
 
 	mesh[0]->material.diffuse = QVector4D(0.8f, 0.2f, 0.2f, 0.8f);
-	mesh[1]->material.diffuse = QVector4D(1, 1, 1, 1);
+	mesh[1]->material.diffuse = QVector4D(0.2f, 1.0f, 0.2f, 1);
 
 	//	image = QImage(":/textures/texture_02.png");
 	//	image = QImage(":/textures/texture_01.jpg", "JPG");
@@ -45,7 +45,7 @@ void OpenGLWidget::initializeGL()
 	glEnable(GL_DEPTH_TEST);
 
 	mesh[0]->newMesh("../foxhouse/fox.off");
-	mesh[1]->newMesh("../foxhouse/sun.off");
+	mesh[1]->newMesh("../foxhouse/chao.off");
 	//ground->newmesh[0]("../foxhouse/sun.off");
 
 
@@ -97,18 +97,24 @@ void OpenGLWidget::animate()
 void OpenGLWidget::mouseMoveEvent(QMouseEvent *event)
 {
 	mesh[0]->trackBall.mouseMove(event->localPos());
+	mesh[1]->trackBall.mouseMove(event->localPos());
 }
 
 void OpenGLWidget::mousePressEvent(QMouseEvent *event)
 {
-	if (event->button() & Qt::LeftButton)
+	if (event->button() & Qt::LeftButton) {
 		mesh[0]->trackBall.mousePress(event->localPos());
+		mesh[1]->trackBall.mousePress(event->localPos());
+	}
 }
 
 void OpenGLWidget::mouseReleaseEvent(QMouseEvent *event)
 {
-	if (event->button() == Qt::LeftButton)
+	if (event->button() == Qt::LeftButton) {
 		mesh[0]->trackBall.mouseRelease(event->localPos());
+		mesh[1]->trackBall.mouseRelease(event->localPos());
+
+	}
 
 }
 

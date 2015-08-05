@@ -23,7 +23,7 @@ Mesh::Mesh()
 
 	colorMaterial = QVector3D(0,0,0);
 	angle = .0f;
-	currentShader = 0;
+	currentShader = 2;
 }
 
 Mesh::~Mesh()
