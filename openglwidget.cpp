@@ -45,8 +45,9 @@ void OpenGLWidget::initializeGL()
 	glEnable(GL_DEPTH_TEST);
 
 	mesh[0]->newMesh("../foxhouse/fox.off");
-	mesh[1]->newMesh("../foxhouse/chao.off");
+	mesh[1]->newMesh("../foxhouse/sun.off");
 	//ground->newmesh[0]("../foxhouse/sun.off");
+
 
 	connect(&timer, SIGNAL(timeout()), this, SLOT(animate()));
 	timer.start(5);
@@ -64,6 +65,7 @@ void OpenGLWidget::resizeGL(int w, int h)
 	mesh[1]->projectionMatrix.setToIdentity();
 	mesh[1]->projectionMatrix.perspective(60.0, static_cast<qreal>(w)/
 									   static_cast<qreal>(h), 0.1, 20.0);
+	mesh[1]->trackBall.resizeViewport(w, h);
 
 	mesh[0]->trackBall.resizeViewport(w, h);
 	update();

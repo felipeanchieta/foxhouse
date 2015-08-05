@@ -17,7 +17,7 @@
    </sizepolicy>
   </property>
   <property name="windowTitle">
-   <string>Qt 5.4 OpenGL 3.3</string>
+   <string>Passeio Protótipo pela Vila de Paranapiacaba</string>
   </property>
   <widget class="QWidget" name="centralWidget">
    <layout class="QGridLayout" name="gridLayout">
