@@ -4,114 +4,87 @@
 
 OpenGLWidget::OpenGLWidget(QWidget *parent) : QOpenGLWidget(parent)
 {
+	/* Alocação dos objetos na memória e definição das suas respectivas propriedades */
 
+	casaFox = new Mesh(0.0f, 2);
+	gramado = new Mesh(-0.21f, 2);
+	ceu = new Mesh(0.0f, 2);
 
-	vertexShader = NULL;
-	fragmentShader = NULL;
-	shaderProgram = NULL;
-
-	_scaleObject = false;
-	_centralizeObject = false;
-	blackBackground = false;
-	xAngle = yAngle = zAngle = 0;
-
-	/*painter = new QPainter(this); */
-
-	mesh[0] = new Mesh(0.0f, 2);
-	mesh[1] = new Mesh(-0.21f, 2);
-
-	for (int i = 2; i < 10; i++)
-		mesh[i] = new Mesh(0.0f, 0);
-
-	mesh[0]->material.diffuse = QVector4D(0.8f, 0.2f, 0.2f, 0.8f);
-	mesh[1]->material.diffuse = QVector4D(0.2f, 1.0f, 0.2f, 1);
-
-	//	image = QImage(":/textures/texture_02.png");
-	//	image = QImage(":/textures/texture_01.jpg", "JPG");
-
-	this->showFullScreen();
-
+	casaFox->material.diffuse = QVector4D(0.8f, 0.2f, 0.2f, 0.8f);
+	gramado->material.diffuse = QVector4D(0.2f, 1.0f, 0.2f, 1);
+	ceu->material.diffuse = QVector4D(0.9f, 0.0f, 0.0f, 1.0f);
 }
 
 OpenGLWidget::~OpenGLWidget()
 {
 
-	for (int i = 0; i < 10; i++) {
-		delete mesh[i];
-		mesh[i] = NULL;
+	if (casaFox) {
+		delete casaFox;
+		casaFox = NULL;
 	}
 
+	if (gramado) {
+		delete gramado;
+		gramado = NULL;
+	}
+
+	if (ceu) {
+		delete ceu;
+		ceu = NULL;
+	}
 }
 
 void OpenGLWidget::initializeGL()
 {
 	initializeOpenGLFunctions();
 
-	std::cout << glGetString(GL_VERSION) << std::endl;
-	std::cout << glGetString(GL_SHADING_LANGUAGE_VERSION) << std::endl;
+	std::cout << "Versão do OpenGL: "	<< glGetString(GL_VERSION) << std::endl;
+	std::cout << "Versão do GLSL: "		<< glGetString(GL_SHADING_LANGUAGE_VERSION) << std::endl;
 
+	/* Permite o eixo z, que dá a profunddade tridimesional */
 	glEnable(GL_DEPTH_TEST);
 
-	mesh[0]->newMesh("../foxhouse/fox.off");
-	mesh[1]->newMesh("../foxhouse/chao_.off");
-	//ground->newmesh[0]("../foxhouse/sun.off");
-
+	/* Carrega os objetos da cena */
+	casaFox->newMesh("../foxhouse/fox.off");
+	gramado->newMesh("../foxhouse/chao_.off");
+	ceu->newMesh("../foxhouse/ceu.off");
 
 	connect(&timer, SIGNAL(timeout()), this, SLOT(animate()));
 	timer.start(5);
-
-
-
-
-	//loadNewObjects(0);
 }
 
 void OpenGLWidget::resizeGL(int w, int h)
 {
 	glViewport(0, 0, w, h);
-	mesh[0]->projectionMatrix.setToIdentity();
-	mesh[0]->projectionMatrix.perspective(60.0, static_cast<qreal>(w)/
-									   static_cast<qreal>(h), 0.1, 20.0);
 
-	mesh[1]->projectionMatrix.setToIdentity();
-	mesh[1]->projectionMatrix.perspective(60.0, static_cast<qreal>(w)/
-									   static_cast<qreal>(h), 0.1, 20.0);
-	mesh[1]->trackBall.resizeViewport(w, h);
+	/* Ajuste da perspectiva dos objetos da cena dependendo do trackball e das dimensões do widget s*/
 
-	mesh[0]->trackBall.resizeViewport(w, h);
+	casaFox->projectionMatrix.setToIdentity();
+	casaFox->projectionMatrix.perspective(60.0, static_cast<qreal>(w)/static_cast<qreal>(h), 0.1, 20.0);
+
+	gramado->projectionMatrix.setToIdentity();
+	gramado->projectionMatrix.perspective(60.0, static_cast<qreal>(w)/static_cast<qreal>(h), 0.1, 20.0);
+
+	gramado->trackBall.resizeViewport(w, h);
+	casaFox->trackBall.resizeViewport(w, h);
+
 	update();
 }
 
 void OpenGLWidget::paintGL()
 {
+	/* Limpa o buffer de pintura e profundidade e insere um plano de fundo azul */
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
 	glClearColor(0.8f, 0.9f, 1.0f, 1.0f);
 
-	drawBackground();
-
-	viewMatrix.setToIdentity();
-	//viewMatrix.rotate(trackBall.getRotation());
-
-	mesh[0]->drawMesh(0.0f);
-	mesh[1]->drawMesh(PLANESCALE);
-	//ground->drawMesh();
-	update();
-}
-
-
-
-void OpenGLWidget::drawBackground()
-{
-
-}
-
-void OpenGLWidget::toggleBackgroundColor(bool changeBColor)
-{
-	blackBackground = changeBColor;
+	/* Desenha os objetos de cena com seus respectivos métodos */
+	casaFox->drawMesh(QVector3D(0, 0, 0));
+	gramado->drawMesh(QVector3D(PLANESCALE, 0, PLANESCALE));
+	ceu->drawMesh(QVector3D(5*PLANESCALE, 5*PLANESCALE, 5*PLANESCALE));
 
 	update();
 }
+
 
 void OpenGLWidget::animate()
 {
@@ -120,41 +93,45 @@ void OpenGLWidget::animate()
 
 void OpenGLWidget::mouseMoveEvent(QMouseEvent *event)
 {
-	mesh[0]->trackBall.mouseMove(event->localPos());
-	mesh[1]->trackBall.mouseMove(event->localPos());
+	casaFox->trackBall.mouseMove(event->localPos());
+	gramado->trackBall.mouseMove(event->localPos());
 }
 
 void OpenGLWidget::mousePressEvent(QMouseEvent *event)
 {
 	if (event->button() & Qt::LeftButton) {
-		mesh[0]->trackBall.mousePress(event->localPos());
-		mesh[1]->trackBall.mousePress(event->localPos());
+		casaFox->trackBall.mousePress(event->localPos());
+		gramado->trackBall.mousePress(event->localPos());
 	}
 }
 
 void OpenGLWidget::mouseReleaseEvent(QMouseEvent *event)
 {
 	if (event->button() == Qt::LeftButton) {
-		mesh[0]->trackBall.mouseRelease(event->localPos());
-		mesh[1]->trackBall.mouseRelease(event->localPos());
-
+		casaFox->trackBall.mouseRelease(event->localPos());
+		gramado->trackBall.mouseRelease(event->localPos());
 	}
-
 }
 
 void OpenGLWidget::wheelEvent(QWheelEvent *event)
 {
-	mesh[0]->zoomEW += 0.001 * event->delta();
-	mesh[0]->zoomNS += 0.001 * event->delta();
-	mesh[1]->zoomEW += 0.001 * event->delta();
-	mesh[1]->zoomNS += 0.001 * event->delta();
+	/* Dá o zoom nos eixos tridimensionais dos objetos da cena */
+
+	casaFox->zoomEW += 0.001 * event->delta();
+	casaFox->zoomNS += 0.001 * event->delta();
+	gramado->zoomEW += 0.001 * event->delta();
+	gramado->zoomNS += 0.001 * event->delta();
+	ceu->zoomEW += 0.001 * event->delta();
+	ceu->zoomNS += 0.001 * event->delta();
 }
 
 
 void OpenGLWidget::keyPressEvent(QKeyEvent *event)
 {
+	makeCurrent();
+
 	switch (event->key()) {
-	/* Escape */
+
 	case Qt::Key_Escape:
 		quick_exit(0);
 		break;
@@ -164,50 +141,45 @@ void OpenGLWidget::keyPressEvent(QKeyEvent *event)
 	case Qt::Key_W:
 	case Qt::Key_Up:
 		/* north */
-		mesh[0]->zoomNS += 0.1f;
-		mesh[0]->drawMesh(0.0f);
-		mesh[1]->zoomNS += 0.1f;
-		mesh[1]->drawMesh(PLANESCALE);
+		casaFox->zoomNS += 0.1f;
+		gramado->zoomNS += 0.1f;
 		break;
 
 	case Qt::Key_S:
 	case Qt::Key_Down:
 		/* south */
-		mesh[0]->zoomNS -= 0.1f;
-		mesh[0]->drawMesh(0.0f);
-		mesh[1]->zoomNS -= 0.1f;
-		mesh[1]->drawMesh(PLANESCALE);
+		casaFox->zoomNS -= 0.1f;
+		gramado->zoomNS -= 0.1f;
 		break;
 
 	case Qt::Key_D:
 	case Qt::Key_Right:
 		/* east */
-		mesh[0]->zoomEW -= 0.1f;
-		mesh[0]->drawMesh(0.0f);
-		mesh[1]->zoomEW -= 0.1f;
-		mesh[1]->drawMesh(PLANESCALE);
+		casaFox->zoomEW -= 0.1f;
+		gramado->zoomEW -= 0.1f;
 		break;
 
 	case Qt::Key_A:
 	case Qt::Key_Left:
 		/* west */
-		mesh[0]->zoomEW += 0.1f;
-		mesh[0]->drawMesh(0.0f);
-		mesh[1]->zoomEW += 0.1f;
-		mesh[1]->drawMesh(PLANESCALE);
+		casaFox->zoomEW += 0.1f;
+		gramado->zoomEW += 0.1f;
 		break;
 
 	case Qt::Key_F11:
+		/* TODO: Fullscreen */
 		break;
 
 	case Qt::Key_P:
+		/* Ctrl-P: Screenshot */
 		if (QApplication::keyboardModifiers() & Qt::ControlModifier)
 			emit takeScreenshot();
-
 
 	default:
 		break;
 	}
+
+	update();
 }
 
 
@@ -223,26 +195,6 @@ void OpenGLWidget::keyPressEvent(QKeyEvent *event)
 //	mesh->texture->setWrapMode(QOpenGLTexture::Repeat);
 //}
 
-
-
-void OpenGLWidget::loadNewObjects(int i)
-{
-	switch (i) {
-	case ARMADILLO:
-		break;
-
-	default:
-		break;
-	}
-
-	mesh[0]->createVAO();
-	mesh[0]->createShaders();
-
-	mesh[1]->createVAO();
-	mesh[1]->createShaders();
-
-	update();
-}
 
 void OpenGLWidget::takeScreenshot()
 {

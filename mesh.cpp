@@ -36,7 +36,7 @@ Mesh::~Mesh()
 	destroyShaders();
 }
 
-void Mesh::drawMesh(float invDiag_)
+void Mesh::drawMesh(QVector3D scale)
 {
 
 	/* glClear(GL_COLOR_BUFFER_BIT); */
@@ -46,16 +46,10 @@ void Mesh::drawMesh(float invDiag_)
 
 	modelView.setToIdentity();
 
-//	modelView *= viewMatrix;
-
-	//modelView.lookAt(camera.eye, trackBall.getRotation().rotatedVector(camera.at - camera.eye), camera.up);
 	modelView.lookAt(camera.eye, camera.at, camera.up);
-	modelView.translate( zoomEW, vPos, zoomNS);
-	//modelView.translate(0, vPos, 0);
-	//modelView.rotate(QQuaternion(zoomNS));
+	modelView.translate(zoomEW, vPos, zoomNS);
 	modelView.rotate(trackBall.getRotation());
-//	modelView *= viewMatrix;
-	modelView.scale(invDiag + invDiag_, invDiag , invDiag + invDiag_);
+	modelView.scale(invDiag + scale.x(), invDiag + scale.y(), invDiag + scale.z());
 	modelView.translate(- midPoint);
 
 

@@ -1,28 +1,29 @@
 #ifndef OPENGLWIDGET_H
 #define OPENGLWIDGET_H
 
-#include <QOpenGLWidget>
+#include <QtOpenGL>
 #include <QOpenGLFunctions>
 #include <QOpenGLBuffer>
 #include <QMessageBox>
 #include <QFileDialog>
+#include <QtGlobal>
+
 #include <iostream>
 #include <fstream>
 #include <limits>
-#include <QtGlobal>
 #include <cmath>
+
 #include <QTime>
 #include <QTimer>
-#include <QtOpenGL>
-#include "trackball.h"
 #include <QMouseEvent>
 #include <QWheelEvent>
 #include <QKeyEvent>
+
+#include "trackball.h"
 #include "camera.h"
 #include "material.h"
 #include "light.h"
 #include "mesh.h"
-#include "fpmouse.h"
 
 class OpenGLWidget : public QOpenGLWidget, private QOpenGLFunctions
 {
@@ -31,70 +32,27 @@ public:
 	explicit OpenGLWidget(QWidget *parent = 0);
 	~OpenGLWidget();
 
+signals:
+	void statusBarMessage(QString ns);
+
+private slots:
+	void takeScreenshot();
+	void animate();
+
+private:
 	void mouseMoveEvent(QMouseEvent *event);
 	void mousePressEvent(QMouseEvent *event);
 	void mouseReleaseEvent(QMouseEvent *event);
 	void wheelEvent(QWheelEvent *event);
 	void keyPressEvent(QKeyEvent *event);
-
-signals:
-	void statusBarMessage(QString ns);
-
-private slots:
-	void toggleBackgroundColor(bool);
-	void takeScreenshot();
-	void animate();
-	void loadNewObjects(int i);
-
-
-private:
-
-	enum {
-		ARMADILLO, BEETLE, BUNNY, CAMEL, ELEPHANT, ELK, MANNEQUIN, MUSHROOM,
-		PEAR, PIG, SPHERE, TORUS
-	};
-
-
-protected:
-
-	Mesh *mesh[10];
-
-
-public:
-
-	QImage image;
-	void drawBackground();
-
-	bool blackBackground;
-
-
-	QOpenGLShader *vertexShader;
-	QOpenGLShader *fragmentShader;
-	QOpenGLShaderProgram *shaderProgram;
-
-	QMatrix4x4 viewMatrix;
-
-	QTimer timer;
-	TrackBall trackBall;
-
-	bool _scaleObject;
-	bool _centralizeObject;
-
-	int xAngle, yAngle, zAngle;
-	int currentShader;
-
-	/* Camera camera;
-	Material material;
-	Light light;
-
-	QVector3D colorMaterial;
-	QVector2D *texCoords; */
-
-
 	void initializeGL();
 	void resizeGL(int, int);
 	void paintGL();
 
+	Mesh *casaFox,*gramado, *ceu;
+	QTimer timer;
+	TrackBall trackBall;
+	int currentShader;
 };
 
 #endif // OPENGLWIDGET_H
