@@ -78,8 +78,11 @@ void OpenGLWidget::paintGL()
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glClearColor(0.92f, 0.95f, 0.98f, 1.0f);
 
-	mesh[0]->drawMesh();
-	mesh[1]->drawMesh();
+	viewMatrix.setToIdentity();
+	//viewMatrix.rotate(trackBall.getRotation());
+
+	mesh[0]->drawMesh(viewMatrix);
+	mesh[1]->drawMesh(viewMatrix);
 	//ground->drawMesh();
 	update();
 }
@@ -141,36 +144,36 @@ void OpenGLWidget::keyPressEvent(QKeyEvent *event)
 	case Qt::Key_Up:
 		/* north */
 		mesh[0]->zoomNS += 0.1f;
-		mesh[0]->drawMesh();
+		mesh[0]->drawMesh(viewMatrix);
 		mesh[1]->zoomNS += 0.1f;
-		mesh[1]->drawMesh();
+		mesh[1]->drawMesh(viewMatrix);
 		break;
 
 	case Qt::Key_S:
 	case Qt::Key_Down:
 		/* south */
 		mesh[0]->zoomNS -= 0.1f;
-		mesh[0]->drawMesh();
+		mesh[0]->drawMesh(viewMatrix);
 		mesh[1]->zoomNS -= 0.1f;
-		mesh[1]->drawMesh();
+		mesh[1]->drawMesh(viewMatrix);
 		break;
 
 	case Qt::Key_D:
 	case Qt::Key_Right:
 		/* east */
 		mesh[0]->zoomEW -= 0.1f;
-		mesh[0]->drawMesh();
+		mesh[0]->drawMesh(viewMatrix);
 		mesh[1]->zoomEW -= 0.1f;
-		mesh[1]->drawMesh();
+		mesh[1]->drawMesh(viewMatrix);
 		break;
 
 	case Qt::Key_A:
 	case Qt::Key_Left:
 		/* west */
 		mesh[0]->zoomEW += 0.1f;
-		mesh[0]->drawMesh();
+		mesh[0]->drawMesh(viewMatrix);
 		mesh[1]->zoomEW += 0.1f;
-		mesh[1]->drawMesh();
+		mesh[1]->drawMesh(viewMatrix);
 		break;
 
 	default:

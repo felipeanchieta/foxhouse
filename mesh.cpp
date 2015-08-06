@@ -23,7 +23,7 @@ Mesh::Mesh(float zPosition)
 
 	colorMaterial = QVector3D(0,0,0);
 	angle = .0f;
-	currentShader = 2;
+	currentShader = 0;
 
 	vPos = zPosition;
 }
@@ -34,7 +34,7 @@ Mesh::~Mesh()
 	destroyShaders();
 }
 
-void Mesh::drawMesh()
+void Mesh::drawMesh(QMatrix4x4 &viewMatrix)
 {
 
 	/* glClear(GL_COLOR_BUFFER_BIT); */
@@ -42,13 +42,19 @@ void Mesh::drawMesh()
 	if (!vboVertices)
 		return;
 
+
 	modelView.setToIdentity();
+
+//	modelView *= viewMatrix;
+
 	modelView.lookAt(camera.eye, camera.at, camera.up);
 	modelView.translate(zoomEW, vPos, zoomNS);
 	modelView.rotate(trackBall.getRotation());
-	//modelView.rotate(angle, QVector3D(1, 1, 0));
+//	modelView *= viewMatrix;
 	modelView.scale(invDiag, invDiag, invDiag);
 	modelView.translate(- midPoint);
+
+
 
 	shaderProgram->bind();
 	vaoObject->bind();
@@ -72,6 +78,7 @@ void Mesh::drawMesh()
 	shaderProgram->setUniformValue("specularProduct", specularProduct);
 	shaderProgram->setUniformValue("shininess", static_cast<GLfloat>(material.shininess));
 	shaderProgram->setUniformValue("modelView", modelView);
+	//shaderProgram->setUniformValue();
 	shaderProgram->setUniformValue("projectionMatrix", projectionMatrix);
 	shaderProgram->setUniformValue("normalMatrix", modelView.normalMatrix());
 	shaderProgram->setUniformValue("midPoint", midPoint);
@@ -99,7 +106,7 @@ void Mesh::drawMesh()
 		delete colorTexture;
 		colorTexture = NULL;
 	}
-
+ view *
 	vboCoordTex->release();  */
 	vaoObject->release();
 	shaderProgram->release();

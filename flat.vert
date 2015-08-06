@@ -3,6 +3,7 @@
 in vec4 vPosition;
 in vec3 vNormal;
 uniform mat4 modelView;
+uniform mat4 view;
 uniform mat4 projectionMatrix;
 uniform mat3 normalMatrix;
 uniform vec4 ambientProduct;
@@ -14,7 +15,7 @@ flat out vec4 inoutColor;
 
 void main()
 {
-	vec4 eyePosition = modelView * vPosition;
+        vec4 eyePosition = modelView * vPosition;
 	vec3 N = normalMatrix * vNormal;
 	vec3 L = lightPosition.xyz - eyePosition.xyz;
 	vec3 E = -eyePosition.xyz;

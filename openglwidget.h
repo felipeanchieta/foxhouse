@@ -14,7 +14,7 @@
 #include <QTime>
 #include <QTimer>
 #include <QtOpenGL>
-#include "trackball.h"
+/* #include "trackball.h" */
 #include <QMouseEvent>
 #include <QWheelEvent>
 #include <QKeyEvent>
@@ -22,6 +22,7 @@
 #include "material.h"
 #include "light.h"
 #include "mesh.h"
+#include "fpmouse.h"
 
 class OpenGLWidget : public QOpenGLWidget, private QOpenGLFunctions
 {
@@ -58,36 +59,19 @@ protected:
 
 public:
 
-	/* QOpenGLBuffer *vboVertices;
-	QOpenGLBuffer *vboIndices;
-	QOpenGLBuffer *vboColors;
-	QOpenGLBuffer *vboNormals;
-	QOpenGLBuffer *vboCoordTex;
-	QOpenGLTexture *texture;
-	QOpenGLTexture *colorTexture;
-	QOpenGLTexture *colorTextureLayer; */
 	QImage image;
 
 	bool blackBackground;
 
-	/* QVector4D *vertices;
-	QVector4D *colors;
-	QVector3D *normals;
-	unsigned int *indices; */
 
 	QOpenGLShader *vertexShader;
 	QOpenGLShader *fragmentShader;
 	QOpenGLShaderProgram *shaderProgram;
 
-	/* uint numVertices;
-	uint numFaces;
-
-	QMatrix4x4 modelView, projectionMatrix;
-	QVector3D midPoint; */
-	//double invDiag, zoom;
+	QMatrix4x4 viewMatrix;
 
 	QTimer timer;
-	TrackBall trackBall;
+	FPMouse trackBall;
 
 	bool _scaleObject;
 	bool _centralizeObject;

@@ -15,10 +15,16 @@ void TrackBall::mouseMove(const QPointF &p)
     int msecs = lastTime.msecsTo(currentTime);
     if (msecs) {
         QVector3D vp = mousePosTo3D(p);
-        QVector3D currentPos3D = QVector3D(vp.x(), vp.y(), 0.0);
+		QVector3D currentPos3D = QVector3D(vp.x(), vp.y(), vp.z());
         double lenSqr = currentPos3D.lengthSquared();
-        (lenSqr >= 1.0) ? currentPos3D.normalize() :
-                          currentPos3D.setZ(sqrt(1.0 - lenSqr));
+
+		if (lenSqr >= 1.0)
+			currentPos3D.normalize();
+		else
+			currentPos3D.setZ(sqrt(1.0 - lenSqr));
+
+/*      (lenSqr >= 1.0) ? currentPos3D.normalize() :
+						  currentPos3D.setZ(sqrt(1.0 - lenSqr)); */
 
         axis = QVector3D::crossProduct(lastPos3D, currentPos3D);
         double angle = rad2deg * axis.length();

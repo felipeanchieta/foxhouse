@@ -8,7 +8,8 @@
 #include <iostream>
 #include <fstream>
 
-#include <trackball.h>
+/* #include <trackball.h> */
+#include <fpmouse.h>
 #include <camera.h>
 #include <material.h>
 #include <light.h>
@@ -19,7 +20,7 @@ class Mesh : public QOpenGLWidget
 public:
 	Mesh(float);
 	~Mesh();
-	void drawMesh();
+	void drawMesh(QMatrix4x4&);
 
 	QOpenGLShader *vertexShader;
 	QOpenGLShader *fragmentShader;
@@ -52,7 +53,7 @@ public:
 
 	float vPos;
 
-	TrackBall trackBall;
+	FPMouse trackBall;
 
 	QVector3D colorMaterial;
 	QVector2D *texCoords;
