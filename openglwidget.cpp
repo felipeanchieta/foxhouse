@@ -8,7 +8,7 @@ OpenGLWidget::OpenGLWidget(QWidget *parent) : QOpenGLWidget(parent)
 
 	casaFox = new Mesh(0.0f, 2);
 	gramado = new Mesh(-0.21f, 2);
-	ceu = new Mesh(0.0f, 2);
+	ceu = new Mesh(0.0f, 1);
 
 	casaFox->material.diffuse = QVector4D(0.8f, 0.2f, 0.2f, 0.8f);
 	gramado->material.diffuse = QVector4D(0.2f, 1.0f, 0.2f, 1);
@@ -65,6 +65,9 @@ void OpenGLWidget::resizeGL(int w, int h)
 	gramado->projectionMatrix.setToIdentity();
 	gramado->projectionMatrix.perspective(60.0, static_cast<qreal>(w)/static_cast<qreal>(h), 0.1, 20.0);
 
+	ceu->projectionMatrix.setToIdentity();
+	ceu->projectionMatrix.perspective(60.0, static_cast<qreal>(w)/static_cast<qreal>(h), 0.1, 20.0);
+
 	gramado->trackBall.resizeViewport(w, h);
 	casaFox->trackBall.resizeViewport(w, h);
 
@@ -75,7 +78,7 @@ void OpenGLWidget::paintGL()
 {
 	/* Limpa o buffer de pintura e profundidade e insere um plano de fundo azul */
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	glClearColor(0.8f, 0.9f, 1.0f, 1.0f);
+//	glClearColor(0.8f, 0.9f, 1.0f, 1.0f);
 
 	/* Desenha os objetos de cena com seus respectivos métodos */
 	casaFox->drawMesh(QVector3D(0, 0, 0));
@@ -182,35 +185,21 @@ void OpenGLWidget::keyPressEvent(QKeyEvent *event)
 	update();
 }
 
-
-
-//void OpenGLWidget::createTexture(const QString &imagePath)
-//{
-//	makeCurrent();
-//	image.load(imagePath);
-//	mesh->texture = new QOpenGLTexture(image);
-
-//	mesh->texture->setMinificationFilter(QOpenGLTexture::LinearMipMapLinear);
-//	mesh->texture->setMagnificationFilter(QOpenGLTexture::Linear);
-//	mesh->texture->setWrapMode(QOpenGLTexture::Repeat);
-//}
-
-
 void OpenGLWidget::takeScreenshot()
 {
 	QImage screenshot = grabFramebuffer();
+	QString fileName = QFileDialog::getSaveFileName(this,
+													"Save File As",
+													QDir::homePath(),
+													QString("PNG Files (*.png)"));
 
-	QString fileName;
-	fileName = QFileDialog::getSaveFileName(this, "Save File As",
-											QDir::homePath(),
-											QString("PNG Files (*.png)"));
 	if (fileName.length()) {
 		if (!fileName.contains(".png"))
 			fileName += ".png";
-		if (screenshot.save(fileName, "PNG")) {
-			QMessageBox::information(this, "Screenshot",
+		if (screenshot.save(fileName, "PNG"))
+			QMessageBox::information(this,
+									 "Screenshot",
 									 "Screenshot taken!",
 									 QMessageBox::Ok);
-		}
 	}
 }

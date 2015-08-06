@@ -27,7 +27,6 @@ Mesh::Mesh(float zPosition, int _currentShader)
 	//this->shader = shader;
 
 	vPos = zPosition;
-	this->setMouseTracking(true);
 }
 
 Mesh::~Mesh()
@@ -38,9 +37,7 @@ Mesh::~Mesh()
 
 void Mesh::drawMesh(QVector3D scale)
 {
-
-	/* glClear(GL_COLOR_BUFFER_BIT); */
-
+	/* Não desenha sem vértices */
 	if (!vboVertices)
 		return;
 
@@ -52,11 +49,8 @@ void Mesh::drawMesh(QVector3D scale)
 	modelView.scale(invDiag + scale.x(), invDiag + scale.y(), invDiag + scale.z());
 	modelView.translate(- midPoint);
 
-
-
 	shaderProgram->bind();
 	vaoObject->bind();
-
 
 	QVector4D ambientProduct = light.ambient * material.ambient;
 	QVector4D diffuseProduct = light.diffuse * material.diffuse;
@@ -76,7 +70,6 @@ void Mesh::drawMesh(QVector3D scale)
 	shaderProgram->setUniformValue("specularProduct", specularProduct);
 	shaderProgram->setUniformValue("shininess", static_cast<GLfloat>(material.shininess));
 	shaderProgram->setUniformValue("modelView", modelView);
-	//shaderProgram->setUniformValue();
 	shaderProgram->setUniformValue("projectionMatrix", projectionMatrix);
 	shaderProgram->setUniformValue("normalMatrix", modelView.normalMatrix());
 	shaderProgram->setUniformValue("midPoint", midPoint);
@@ -94,7 +87,7 @@ void Mesh::drawMesh(QVector3D scale)
 
 	glDrawElements(GL_TRIANGLES, numFaces * 3, GL_UNSIGNED_INT, 0);
 
-	vboIndices->release();
+	//vboIndices->release();
 	//vboColors->release();
 	//vboVertices->release();
 
@@ -110,59 +103,6 @@ void Mesh::drawMesh(QVector3D scale)
 	shaderProgram->release();
 
 	update();
-}
-
-void Mesh::createVAO()
-{
-	destroyVAO();
-
-	vaoObject = new QOpenGLVertexArrayObject(this);
-	vaoObject->create();
-	vaoObject->bind();
-
-	vboVertices = new QOpenGLBuffer(QOpenGLBuffer::VertexBuffer);
-	vboVertices->create();
-	vboVertices->bind();
-	vboVertices->setUsagePattern(QOpenGLBuffer::StaticDraw);
-	vboVertices->allocate(vertices, numVertices * sizeof(QVector4D));
-	delete[] vertices;
-	vertices = NULL;
-
-	vboColors = new QOpenGLBuffer(QOpenGLBuffer::VertexBuffer);
-	vboColors->create();
-	vboColors->bind();
-	vboColors->setUsagePattern(QOpenGLBuffer::StaticDraw);
-	// 4 = numVertices
-	vboColors->allocate(colors, numVertices * sizeof(QVector4D));
-	delete[] colors;
-	colors = NULL;
-
-	vboNormals = new QOpenGLBuffer(QOpenGLBuffer::VertexBuffer);
-	vboNormals->create();
-	vboNormals->bind();
-	vboNormals->setUsagePattern(QOpenGLBuffer::StaticDraw);
-	vboNormals->allocate(normals, numFaces * sizeof(QVector3D));
-	delete[] normals;
-	normals = NULL;
-
-	/* vboCoordTex = new QOpenGLBuffer(QOpenGLBuffer::VertexBuffer);
-	vboCoordTex->create();
-	vboCoordTex->bind();
-	vboCoordTex->setUsagePattern(QOpenGLBuffer::StaticDraw);
-	vboCoordTex->allocate(texCoords, numVertices * sizeof(QVector2D));
-	delete[] texCoords;
-	texCoords = NULL; */
-
-	vboIndices = new QOpenGLBuffer(QOpenGLBuffer::IndexBuffer);
-	vboIndices ->create();
-	vboIndices ->bind();
-	vboIndices ->setUsagePattern(QOpenGLBuffer::StaticDraw);
-	// 2 = numFaces
-	vboIndices ->allocate(indices, numFaces * 3 * sizeof (unsigned int));
-	delete[] indices;
-	indices = NULL;
-
-	vaoObject->release();
 }
 
 void Mesh::destroyVAO()
@@ -198,13 +138,58 @@ void Mesh::destroyVAO()
 	}
 }
 
-void Mesh::setShaderProgram(QOpenGLShaderProgram *shaderProgram)
+void Mesh::createVAO()
 {
-	this->shaderProgram = shaderProgram;
+	destroyVAO();
 
-	update();
+	vaoObject = new QOpenGLVertexArrayObject(this);
+	vaoObject->create();
+	vaoObject->bind();
+
+	vboVertices = new QOpenGLBuffer(QOpenGLBuffer::VertexBuffer);
+	vboVertices->create();
+	vboVertices->bind();
+	vboVertices->setUsagePattern(QOpenGLBuffer::StaticDraw);
+	vboVertices->allocate(vertices, numVertices * sizeof(QVector4D));
+	delete[] vertices;
+	vertices = NULL;
+
+	vboColors = new QOpenGLBuffer(QOpenGLBuffer::VertexBuffer);
+	vboColors->create();
+	vboColors->bind();
+	vboColors->setUsagePattern(QOpenGLBuffer::StaticDraw);
+	vboColors->allocate(colors, numVertices * sizeof(QVector4D));
+	delete[] colors;
+	colors = NULL;
+
+	vboNormals = new QOpenGLBuffer(QOpenGLBuffer::VertexBuffer);
+	vboNormals->create();
+	vboNormals->bind();
+	vboNormals->setUsagePattern(QOpenGLBuffer::StaticDraw);
+	vboNormals->allocate(normals, numFaces * sizeof(QVector3D));
+	delete[] normals;
+	normals = NULL;
+
+	/* vboCoordTex = new QOpenGLBuffer(QOpenGLBuffer::VertexBuffer);
+	vboCoordTex->create();
+	vboCoordTex->bind();
+	vboCoordTex->setUsagePattern(QOpenGLBuffer::StaticDraw);
+	vboCoordTex->allocate(texCoords, numVertices * sizeof(QVector2D));
+	delete[] texCoords;
+	texCoords = NULL; */
+
+	vboIndices = new QOpenGLBuffer(QOpenGLBuffer::IndexBuffer);
+	vboIndices ->create();
+	vboIndices ->bind();
+	vboIndices ->setUsagePattern(QOpenGLBuffer::StaticDraw);
+	vboIndices ->allocate(indices, numFaces * 3 * sizeof (unsigned int));
+	delete[] indices;
+	indices = NULL;
+
+	vaoObject->release();
 }
 
+/* Faz o parsing dos arquivos .OFF */
 void Mesh::newMesh(QString fileName)
 {
 	 std::ifstream stream;
@@ -278,8 +263,6 @@ void Mesh::newMesh(QString fileName)
 		indices[i * 3 + 2] = c;
 	}
 
-//	emit statusBarMessage(QString("Samples %1, Faces %2").arg(numVertices).arg(numFaces));
-
 	stream.close();
 	calculateNormal();
 	genTexCoordsCylinder();
@@ -288,6 +271,7 @@ void Mesh::newMesh(QString fileName)
 	createShaders();
 }
 
+/* Calcula as normais de um objeto, feito em sala de aula */
 void Mesh::calculateNormal()
 {
 	normals = new QVector3D[numVertices];
@@ -360,13 +344,10 @@ void Mesh::createShaders()
 	};
 
 	vertexShader = new QOpenGLShader(QOpenGLShader::Vertex);
-
 	if (!vertexShader->compileSourceFile(vertexShaderFile[currentShader]))
 		qWarning() << vertexShader->log();
 
-
 	fragmentShader = new QOpenGLShader(QOpenGLShader::Fragment);
-
 	if (!fragmentShader->compileSourceFile(fragmentShaderFile[currentShader]))
 		qWarning() << fragmentShader->log();
 
@@ -378,20 +359,38 @@ void Mesh::createShaders()
 		qWarning() << shaderProgram->log() << endl;
 }
 
+void Mesh::createTexture(const QString &imagePath)
+{
+	makeCurrent();
+	image.load(imagePath);
+	texture = new QOpenGLTexture(image);
+
+	texture->setMinificationFilter(QOpenGLTexture::LinearMipMapLinear);
+	texture->setMagnificationFilter(QOpenGLTexture::Linear);
+	texture->setWrapMode(QOpenGLTexture::Repeat);
+}
+
+/* Texture cilíndrica */
 void Mesh::genTexCoordsCylinder()
 {
+	unsigned int i;
+
 	if(texCoords)
 		delete [] texCoords ;
+
 	// Compute minimum and maximum values
 	float fmax = std::numeric_limits<float>::max();
 	float minz = fmax ;
 	float maxz = - fmax ;
-	for(int i =0; i < numVertices ; ++ i) {
+
+	for (i = 0; i < numVertices; i++) {
 		if(vertices[i]. z()< minz)minz = vertices[i]. z();
 		if(vertices[i]. z()> maxz)maxz = vertices[i]. z();
 	}
+
 	texCoords = new QVector2D[numVertices];
-	for(int i =0; i < numVertices ; ++ i) { // https :// en . wikipedia . org / wiki / Atan2
+
+	for (i = 0; i < numVertices; i++) {
 		float s =(atan2(vertices[i].y(), vertices[i].x())+M_PI)/(2*M_PI);
 		float t = 1.0f -(vertices[i].z()- minz)/(maxz - minz);
 		texCoords[i] = QVector2D(s,t);

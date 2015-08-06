@@ -16,6 +16,7 @@
 
 class Mesh : public QOpenGLWidget
 {
+
 public:
 	Mesh(float, int);
 	~Mesh();
@@ -64,10 +65,13 @@ public:
 	void createShaders();
 	void destroyShaders();
 	void calculateNormal();
-	void setShaderProgram(QOpenGLShaderProgram *shaderProgram);
 	void genTexCoordsCylinder();
 
 	int currentShader;
+
+private:
+
+	void createTexture(const QString &imagePath);
 };
 
 #endif // MESH_H
