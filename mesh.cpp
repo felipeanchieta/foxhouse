@@ -1,6 +1,6 @@
 #include "mesh.h"
 
-Mesh::Mesh(float zPosition)
+Mesh::Mesh(float zPosition, int _currentShader)
 {
 	vertices = NULL;
 	colors = NULL;
@@ -23,7 +23,8 @@ Mesh::Mesh(float zPosition)
 
 	colorMaterial = QVector3D(0,0,0);
 	angle = .0f;
-	currentShader = 3;
+	currentShader = _currentShader;
+	//this->shader = shader;
 
 	vPos = zPosition;
 	this->setMouseTracking(true);
@@ -47,9 +48,12 @@ void Mesh::drawMesh(float invDiag_)
 
 //	modelView *= viewMatrix;
 
-	modelView.lookAt(camera.eye, trackBall.getRotation().rotatedVector(camera.at - camera.eye), camera.up);
-	modelView.translate(zoomEW, vPos, zoomNS);
-	/* modelView.rotate(trackBall.getRotation()); */
+	//modelView.lookAt(camera.eye, trackBall.getRotation().rotatedVector(camera.at - camera.eye), camera.up);
+	modelView.lookAt(camera.eye, camera.at, camera.up);
+	modelView.translate( zoomEW, vPos, zoomNS);
+	//modelView.translate(0, vPos, 0);
+	//modelView.rotate(QQuaternion(zoomNS));
+	modelView.rotate(trackBall.getRotation());
 //	modelView *= viewMatrix;
 	modelView.scale(invDiag + invDiag_, invDiag , invDiag + invDiag_);
 	modelView.translate(- midPoint);
@@ -365,6 +369,7 @@ void Mesh::createShaders()
 
 	if (!vertexShader->compileSourceFile(vertexShaderFile[currentShader]))
 		qWarning() << vertexShader->log();
+
 
 	fragmentShader = new QOpenGLShader(QOpenGLShader::Fragment);
 

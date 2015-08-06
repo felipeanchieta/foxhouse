@@ -15,17 +15,21 @@ OpenGLWidget::OpenGLWidget(QWidget *parent) : QOpenGLWidget(parent)
 	blackBackground = false;
 	xAngle = yAngle = zAngle = 0;
 
-	mesh[0] = new Mesh(0.0f);
-	mesh[1] = new Mesh(-0.21f);
+	/*painter = new QPainter(this); */
+
+	mesh[0] = new Mesh(0.0f, 2);
+	mesh[1] = new Mesh(-0.21f, 2);
 
 	for (int i = 2; i < 10; i++)
-		mesh[i] = new Mesh(0.0f);
+		mesh[i] = new Mesh(0.0f, 0);
 
 	mesh[0]->material.diffuse = QVector4D(0.8f, 0.2f, 0.2f, 0.8f);
 	mesh[1]->material.diffuse = QVector4D(0.2f, 1.0f, 0.2f, 1);
 
 	//	image = QImage(":/textures/texture_02.png");
 	//	image = QImage(":/textures/texture_01.jpg", "JPG");
+
+	this->showFullScreen();
 
 }
 
@@ -56,6 +60,9 @@ void OpenGLWidget::initializeGL()
 	connect(&timer, SIGNAL(timeout()), this, SLOT(animate()));
 	timer.start(5);
 
+
+
+
 	//loadNewObjects(0);
 }
 
@@ -78,7 +85,10 @@ void OpenGLWidget::resizeGL(int w, int h)
 void OpenGLWidget::paintGL()
 {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	glClearColor(0.92f, 0.95f, 0.98f, 1.0f);
+
+	glClearColor(0.8f, 0.9f, 1.0f, 1.0f);
+
+	drawBackground();
 
 	viewMatrix.setToIdentity();
 	//viewMatrix.rotate(trackBall.getRotation());
@@ -87,6 +97,13 @@ void OpenGLWidget::paintGL()
 	mesh[1]->drawMesh(PLANESCALE);
 	//ground->drawMesh();
 	update();
+}
+
+
+
+void OpenGLWidget::drawBackground()
+{
+
 }
 
 void OpenGLWidget::toggleBackgroundColor(bool changeBColor)
@@ -129,6 +146,8 @@ void OpenGLWidget::wheelEvent(QWheelEvent *event)
 {
 	mesh[0]->zoomEW += 0.001 * event->delta();
 	mesh[0]->zoomNS += 0.001 * event->delta();
+	mesh[1]->zoomEW += 0.001 * event->delta();
+	mesh[1]->zoomNS += 0.001 * event->delta();
 }
 
 
@@ -178,6 +197,14 @@ void OpenGLWidget::keyPressEvent(QKeyEvent *event)
 		mesh[1]->drawMesh(PLANESCALE);
 		break;
 
+	case Qt::Key_F11:
+		break;
+
+	case Qt::Key_P:
+		if (QApplication::keyboardModifiers() & Qt::ControlModifier)
+			emit takeScreenshot();
+
+
 	default:
 		break;
 	}
@@ -215,4 +242,23 @@ void OpenGLWidget::loadNewObjects(int i)
 	mesh[1]->createShaders();
 
 	update();
+}
+
+void OpenGLWidget::takeScreenshot()
+{
+	QImage screenshot = grabFramebuffer();
+
+	QString fileName;
+	fileName = QFileDialog::getSaveFileName(this, "Save File As",
+											QDir::homePath(),
+											QString("PNG Files (*.png)"));
+	if (fileName.length()) {
+		if (!fileName.contains(".png"))
+			fileName += ".png";
+		if (screenshot.save(fileName, "PNG")) {
+			QMessageBox::information(this, "Screenshot",
+									 "Screenshot taken!",
+									 QMessageBox::Ok);
+		}
+	}
 }

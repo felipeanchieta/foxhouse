@@ -14,7 +14,7 @@
 #include <QTime>
 #include <QTimer>
 #include <QtOpenGL>
-/* #include "trackball.h" */
+#include "trackball.h"
 #include <QMouseEvent>
 #include <QWheelEvent>
 #include <QKeyEvent>
@@ -42,7 +42,9 @@ signals:
 
 private slots:
 	void toggleBackgroundColor(bool);
-	void animate(); void loadNewObjects(int i);
+	void takeScreenshot();
+	void animate();
+	void loadNewObjects(int i);
 
 
 private:
@@ -52,6 +54,7 @@ private:
 		PEAR, PIG, SPHERE, TORUS
 	};
 
+
 protected:
 
 	Mesh *mesh[10];
@@ -60,6 +63,7 @@ protected:
 public:
 
 	QImage image;
+	void drawBackground();
 
 	bool blackBackground;
 
@@ -71,7 +75,7 @@ public:
 	QMatrix4x4 viewMatrix;
 
 	QTimer timer;
-	FPMouse trackBall;
+	TrackBall trackBall;
 
 	bool _scaleObject;
 	bool _centralizeObject;
