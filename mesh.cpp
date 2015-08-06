@@ -1,6 +1,6 @@
 #include "mesh.h"
 
-Mesh::Mesh()
+Mesh::Mesh(float zPosition)
 {
 	vertices = NULL;
 	colors = NULL;
@@ -24,6 +24,8 @@ Mesh::Mesh()
 	colorMaterial = QVector3D(0,0,0);
 	angle = .0f;
 	currentShader = 2;
+
+	vPos = zPosition;
 }
 
 Mesh::~Mesh()
@@ -42,7 +44,7 @@ void Mesh::drawMesh()
 
 	modelView.setToIdentity();
 	modelView.lookAt(camera.eye, camera.at, camera.up);
-	modelView.translate(zoomEW, 0, zoomNS);
+	modelView.translate(zoomEW, vPos, zoomNS);
 	modelView.rotate(trackBall.getRotation());
 	//modelView.rotate(angle, QVector3D(1, 1, 0));
 	modelView.scale(invDiag, invDiag, invDiag);

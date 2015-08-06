@@ -13,9 +13,11 @@ OpenGLWidget::OpenGLWidget(QWidget *parent) : QOpenGLWidget(parent)
 	blackBackground = false;
 	xAngle = yAngle = zAngle = 0;
 
+	mesh[0] = new Mesh(0.0f);
+	mesh[1] = new Mesh(-0.21f);
 
-	for (int i = 0; i < 10; i++)
-		mesh[i] = new Mesh();
+	for (int i = 2; i < 10; i++)
+		mesh[i] = new Mesh(0.0f);
 
 	mesh[0]->material.diffuse = QVector4D(0.8f, 0.2f, 0.2f, 0.8f);
 	mesh[1]->material.diffuse = QVector4D(0.2f, 1.0f, 0.2f, 1);
@@ -140,6 +142,8 @@ void OpenGLWidget::keyPressEvent(QKeyEvent *event)
 		/* north */
 		mesh[0]->zoomNS += 0.1f;
 		mesh[0]->drawMesh();
+		mesh[1]->zoomNS += 0.1f;
+		mesh[1]->drawMesh();
 		break;
 
 	case Qt::Key_S:
@@ -147,6 +151,8 @@ void OpenGLWidget::keyPressEvent(QKeyEvent *event)
 		/* south */
 		mesh[0]->zoomNS -= 0.1f;
 		mesh[0]->drawMesh();
+		mesh[1]->zoomNS -= 0.1f;
+		mesh[1]->drawMesh();
 		break;
 
 	case Qt::Key_D:
@@ -154,6 +160,8 @@ void OpenGLWidget::keyPressEvent(QKeyEvent *event)
 		/* east */
 		mesh[0]->zoomEW -= 0.1f;
 		mesh[0]->drawMesh();
+		mesh[1]->zoomEW -= 0.1f;
+		mesh[1]->drawMesh();
 		break;
 
 	case Qt::Key_A:
@@ -161,6 +169,8 @@ void OpenGLWidget::keyPressEvent(QKeyEvent *event)
 		/* west */
 		mesh[0]->zoomEW += 0.1f;
 		mesh[0]->drawMesh();
+		mesh[1]->zoomEW += 0.1f;
+		mesh[1]->drawMesh();
 		break;
 
 	default:

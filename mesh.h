@@ -17,7 +17,7 @@
 class Mesh : public QOpenGLWidget
 {
 public:
-	Mesh();
+	Mesh(float);
 	~Mesh();
 	void drawMesh();
 
@@ -49,6 +49,8 @@ public:
 	Light light;
 	double zoomNS, zoomEW, invDiag, angle;
 	QOpenGLShaderProgram *shaderProgram;
+
+	float vPos;
 
 	TrackBall trackBall;
 
