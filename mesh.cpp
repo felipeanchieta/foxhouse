@@ -23,9 +23,10 @@ Mesh::Mesh(float zPosition)
 
 	colorMaterial = QVector3D(0,0,0);
 	angle = .0f;
-	currentShader = 0;
+	currentShader = 3;
 
 	vPos = zPosition;
+	this->setMouseTracking(true);
 }
 
 Mesh::~Mesh()
@@ -34,7 +35,7 @@ Mesh::~Mesh()
 	destroyShaders();
 }
 
-void Mesh::drawMesh(QMatrix4x4 &viewMatrix)
+void Mesh::drawMesh(float invDiag_)
 {
 
 	/* glClear(GL_COLOR_BUFFER_BIT); */
@@ -42,16 +43,15 @@ void Mesh::drawMesh(QMatrix4x4 &viewMatrix)
 	if (!vboVertices)
 		return;
 
-
 	modelView.setToIdentity();
 
 //	modelView *= viewMatrix;
 
-	modelView.lookAt(camera.eye, camera.at, camera.up);
+	modelView.lookAt(camera.eye, trackBall.getRotation().rotatedVector(camera.at - camera.eye), camera.up);
 	modelView.translate(zoomEW, vPos, zoomNS);
-	modelView.rotate(trackBall.getRotation());
+	/* modelView.rotate(trackBall.getRotation()); */
 //	modelView *= viewMatrix;
-	modelView.scale(invDiag, invDiag, invDiag);
+	modelView.scale(invDiag + invDiag_, invDiag , invDiag + invDiag_);
 	modelView.translate(- midPoint);
 
 

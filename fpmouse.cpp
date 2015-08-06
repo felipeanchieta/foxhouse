@@ -32,7 +32,7 @@ void FPMouse::mouseMove(const QPointF &p)
 /*      (lenSqr >= 1.0) ? currentPos3D.normalize() :
 						  currentPos3D.setZ(sqrt(1.0 - lenSqr)); */
 
-		axis = QVector3D::crossProduct(lastPos3D, currentPos3D);
+		axis = - QVector3D::crossProduct(lastPos3D, currentPos3D);
 		double angle = rad2deg * axis.length();
 		velocity = angle / msecs;
 		axis.normalize();

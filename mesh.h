@@ -20,7 +20,7 @@ class Mesh : public QOpenGLWidget
 public:
 	Mesh(float);
 	~Mesh();
-	void drawMesh(QMatrix4x4&);
+	void drawMesh(float);
 
 	QOpenGLShader *vertexShader;
 	QOpenGLShader *fragmentShader;

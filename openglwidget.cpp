@@ -1,5 +1,7 @@
 #include "openglwidget.h"
 
+#define PLANESCALE 0.1f
+
 OpenGLWidget::OpenGLWidget(QWidget *parent) : QOpenGLWidget(parent)
 {
 
@@ -47,7 +49,7 @@ void OpenGLWidget::initializeGL()
 	glEnable(GL_DEPTH_TEST);
 
 	mesh[0]->newMesh("../foxhouse/fox.off");
-	mesh[1]->newMesh("../foxhouse/chao.off");
+	mesh[1]->newMesh("../foxhouse/chao_.off");
 	//ground->newmesh[0]("../foxhouse/sun.off");
 
 
@@ -81,8 +83,8 @@ void OpenGLWidget::paintGL()
 	viewMatrix.setToIdentity();
 	//viewMatrix.rotate(trackBall.getRotation());
 
-	mesh[0]->drawMesh(viewMatrix);
-	mesh[1]->drawMesh(viewMatrix);
+	mesh[0]->drawMesh(0.0f);
+	mesh[1]->drawMesh(PLANESCALE);
 	//ground->drawMesh();
 	update();
 }
@@ -144,36 +146,36 @@ void OpenGLWidget::keyPressEvent(QKeyEvent *event)
 	case Qt::Key_Up:
 		/* north */
 		mesh[0]->zoomNS += 0.1f;
-		mesh[0]->drawMesh(viewMatrix);
+		mesh[0]->drawMesh(0.0f);
 		mesh[1]->zoomNS += 0.1f;
-		mesh[1]->drawMesh(viewMatrix);
+		mesh[1]->drawMesh(PLANESCALE);
 		break;
 
 	case Qt::Key_S:
 	case Qt::Key_Down:
 		/* south */
 		mesh[0]->zoomNS -= 0.1f;
-		mesh[0]->drawMesh(viewMatrix);
+		mesh[0]->drawMesh(0.0f);
 		mesh[1]->zoomNS -= 0.1f;
-		mesh[1]->drawMesh(viewMatrix);
+		mesh[1]->drawMesh(PLANESCALE);
 		break;
 
 	case Qt::Key_D:
 	case Qt::Key_Right:
 		/* east */
 		mesh[0]->zoomEW -= 0.1f;
-		mesh[0]->drawMesh(viewMatrix);
+		mesh[0]->drawMesh(0.0f);
 		mesh[1]->zoomEW -= 0.1f;
-		mesh[1]->drawMesh(viewMatrix);
+		mesh[1]->drawMesh(PLANESCALE);
 		break;
 
 	case Qt::Key_A:
 	case Qt::Key_Left:
 		/* west */
 		mesh[0]->zoomEW += 0.1f;
-		mesh[0]->drawMesh(viewMatrix);
+		mesh[0]->drawMesh(0.0f);
 		mesh[1]->zoomEW += 0.1f;
-		mesh[1]->drawMesh(viewMatrix);
+		mesh[1]->drawMesh(PLANESCALE);
 		break;
 
 	default:
