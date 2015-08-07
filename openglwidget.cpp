@@ -7,12 +7,14 @@ OpenGLWidget::OpenGLWidget(QWidget *parent) : QOpenGLWidget(parent)
 	/* Alocação dos objetos na memória e definição das suas respectivas propriedades */
 
 	casaFox = new Mesh(0.0f, 2);
-	gramado = new Mesh(-0.21f, 2);
+	gramado = new Mesh(-0.21f, 5);
 	ceu = new Mesh(0.0f, 5);
 
 	casaFox->material.diffuse = QVector4D(0.8f, 0.2f, 0.2f, 0.8f);
 	gramado->material.diffuse = QVector4D(0.2f, 1.0f, 0.2f, 1);
 	ceu->material.diffuse = QVector4D(0.9f, 0.9f, 0.98f, 1.0f);
+
+	gramado->image = QImage(":/textures/grass.jpg");
 	ceu->image = QImage(":/textures/sky.jpg");
 
 }
