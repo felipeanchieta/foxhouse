@@ -8,11 +8,13 @@ OpenGLWidget::OpenGLWidget(QWidget *parent) : QOpenGLWidget(parent)
 
 	casaFox = new Mesh(0.0f, 2);
 	gramado = new Mesh(-0.21f, 2);
-	ceu = new Mesh(0.0f, 1);
+	ceu = new Mesh(0.0f, 5);
 
 	casaFox->material.diffuse = QVector4D(0.8f, 0.2f, 0.2f, 0.8f);
 	gramado->material.diffuse = QVector4D(0.2f, 1.0f, 0.2f, 1);
-	ceu->material.diffuse = QVector4D(0.9f, 0.0f, 0.0f, 1.0f);
+	ceu->material.diffuse = QVector4D(0.9f, 0.9f, 0.98f, 1.0f);
+	ceu->image = QImage(":/textures/sky.jpg");
+
 }
 
 OpenGLWidget::~OpenGLWidget()
@@ -38,8 +40,8 @@ void OpenGLWidget::initializeGL()
 {
 	initializeOpenGLFunctions();
 
-	std::cout << "Versão do OpenGL: "	<< glGetString(GL_VERSION) << std::endl;
-	std::cout << "Versão do GLSL: "		<< glGetString(GL_SHADING_LANGUAGE_VERSION) << std::endl;
+	std::cout << "Versão do OpenGL: \t"	<< glGetString(GL_VERSION) << std::endl;
+	std::cout << "Versão do GLSL: \t"	<< glGetString(GL_SHADING_LANGUAGE_VERSION) << std::endl;
 
 	/* Permite o eixo z, que dá a profunddade tridimesional */
 	glEnable(GL_DEPTH_TEST);
@@ -67,6 +69,8 @@ void OpenGLWidget::resizeGL(int w, int h)
 
 	ceu->projectionMatrix.setToIdentity();
 	ceu->projectionMatrix.perspective(60.0, static_cast<qreal>(w)/static_cast<qreal>(h), 0.1, 20.0);
+
+	/* O céu é poupado da trackball por estatico na cena */
 
 	gramado->trackBall.resizeViewport(w, h);
 	casaFox->trackBall.resizeViewport(w, h);

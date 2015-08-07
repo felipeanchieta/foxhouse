@@ -9,14 +9,14 @@ Mesh::Mesh(float zPosition, int _currentShader)
 	texture = NULL;
 	colorTexture = NULL;
 	colorTextureLayer = NULL;
-
+	texCoords = NULL;
 	vboVertices = NULL;
 	vboColors = NULL;
 	vboIndices = NULL;
 	vboNormals = NULL;
 	vboCoordTex = NULL;
 	vaoObject = NULL;
-
+	isUsingTextures = false;
 	vertexShader = NULL;
 	fragmentShader = NULL;
 	shaderProgram = NULL;
@@ -37,6 +37,8 @@ Mesh::~Mesh()
 
 void Mesh::drawMesh(QVector3D scale)
 {
+	makeCurrent();
+
 	/* Não desenha sem vértices */
 	if (!vboVertices)
 		return;
@@ -49,6 +51,8 @@ void Mesh::drawMesh(QVector3D scale)
 	modelView.scale(invDiag + scale.x(), invDiag + scale.y(), invDiag + scale.z());
 	modelView.translate(- midPoint);
 
+
+
 	shaderProgram->bind();
 	vaoObject->bind();
 
@@ -56,13 +60,14 @@ void Mesh::drawMesh(QVector3D scale)
 	QVector4D diffuseProduct = light.diffuse * material.diffuse;
 	QVector4D specularProduct = light.specular * material.specular;
 
-	/* vboCoordTex->bind();
+	vboCoordTex->bind();
 	shaderProgram->enableAttributeArray("vcoordText") ;
 	shaderProgram->setAttributeBuffer("vcoordText", GL_FLOAT, 0, 2, 0);
 
+
 	colorTexture = new QOpenGLTexture(image);
 	colorTexture->bind(0);
-	shaderProgram->setUniformValue("colorTexture", 0); */
+	shaderProgram->setUniformValue("colorTexture", 0);
 
 	shaderProgram->setUniformValue("lightPosition", light.position);
 	shaderProgram->setUniformValue("ambientProduct", ambientProduct);
@@ -87,18 +92,18 @@ void Mesh::drawMesh(QVector3D scale)
 
 	glDrawElements(GL_TRIANGLES, numFaces * 3, GL_UNSIGNED_INT, 0);
 
-	//vboIndices->release();
-	//vboColors->release();
-	//vboVertices->release();
+	vboIndices->release();
+	vboColors->release();
+	vboVertices->release();
 
 
-	/* if(colorTexture) {
+	 if(colorTexture) {
 		colorTexture->release(0);
 		delete colorTexture;
 		colorTexture = NULL;
 	}
- view *
-	vboCoordTex->release();  */
+
+//	vboCoordTex->release();
 	vaoObject->release();
 	shaderProgram->release();
 
@@ -129,6 +134,12 @@ void Mesh::destroyVAO()
 		vboIndices->release();
 		delete vboIndices;
 		vboIndices = NULL;
+	}
+
+	if (vboCoordTex) {
+		vboCoordTex->release();
+		delete vboCoordTex;
+		vboCoordTex = NULL;
 	}
 
 	if (vaoObject) {
@@ -170,13 +181,13 @@ void Mesh::createVAO()
 	delete[] normals;
 	normals = NULL;
 
-	/* vboCoordTex = new QOpenGLBuffer(QOpenGLBuffer::VertexBuffer);
+	vboCoordTex = new QOpenGLBuffer(QOpenGLBuffer::VertexBuffer);
 	vboCoordTex->create();
 	vboCoordTex->bind();
 	vboCoordTex->setUsagePattern(QOpenGLBuffer::StaticDraw);
 	vboCoordTex->allocate(texCoords, numVertices * sizeof(QVector2D));
 	delete[] texCoords;
-	texCoords = NULL; */
+	texCoords = NULL;
 
 	vboIndices = new QOpenGLBuffer(QOpenGLBuffer::IndexBuffer);
 	vboIndices ->create();
@@ -362,18 +373,22 @@ void Mesh::createShaders()
 void Mesh::createTexture(const QString &imagePath)
 {
 	makeCurrent();
+
 	image.load(imagePath);
 	texture = new QOpenGLTexture(image);
 
-	texture->setMinificationFilter(QOpenGLTexture::LinearMipMapLinear);
-	texture->setMagnificationFilter(QOpenGLTexture::Linear);
-	texture->setWrapMode(QOpenGLTexture::Repeat);
+	if (texture) {
+		texture->setMinificationFilter(QOpenGLTexture::LinearMipMapLinear);
+		texture->setMagnificationFilter(QOpenGLTexture::Linear);
+		texture->setWrapMode(QOpenGLTexture::Repeat);
+	}
+
 }
 
 /* Texture cilíndrica */
 void Mesh::genTexCoordsCylinder()
 {
-	unsigned int i;
+
 
 	if(texCoords)
 		delete [] texCoords ;
@@ -383,14 +398,14 @@ void Mesh::genTexCoordsCylinder()
 	float minz = fmax ;
 	float maxz = - fmax ;
 
-	for (i = 0; i < numVertices; i++) {
+	for (int i = 0; i < numVertices; ++i) {
 		if(vertices[i]. z()< minz)minz = vertices[i]. z();
 		if(vertices[i]. z()> maxz)maxz = vertices[i]. z();
 	}
 
 	texCoords = new QVector2D[numVertices];
 
-	for (i = 0; i < numVertices; i++) {
+	for (int i = 0; i < numVertices; ++i) {
 		float s =(atan2(vertices[i].y(), vertices[i].x())+M_PI)/(2*M_PI);
 		float t = 1.0f -(vertices[i].z()- minz)/(maxz - minz);
 		texCoords[i] = QVector2D(s,t);

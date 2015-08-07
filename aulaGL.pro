@@ -19,8 +19,7 @@ SOURCES += main.cpp\
     camera.cpp \
     material.cpp \
     light.cpp \
-    mesh.cpp \
-    fpmouse.cpp
+    mesh.cpp
 
 HEADERS  += mainwindow.h \
     openglwidget.h \
@@ -28,8 +27,7 @@ HEADERS  += mainwindow.h \
     camera.h \
     material.h \
     light.h \
-    mesh.h \
-    fpmouse.h
+    mesh.h
 
 FORMS    += mainwindow.ui
 

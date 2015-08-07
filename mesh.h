@@ -68,10 +68,12 @@ public:
 	void genTexCoordsCylinder();
 
 	int currentShader;
+	void createTexture(const QString &imagePath);
+
 
 private:
 
-	void createTexture(const QString &imagePath);
+	bool isUsingTextures;
 };
 
 #endif // MESH_H

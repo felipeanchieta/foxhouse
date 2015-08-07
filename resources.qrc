@@ -20,5 +20,6 @@
     <qresource prefix="/textures">
         <file>texture_01.jpg</file>
         <file>texture_02.png</file>
+        <file>sky.jpg</file>
     </qresource>
 </RCC>
