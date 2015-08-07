@@ -48,11 +48,18 @@ private:
 	void initializeGL();
 	void resizeGL(int, int);
 	void paintGL();
+	void createTexture(Mesh *mesh, const QString &imagePath);
+	void createNormalTexture(Mesh *mesh, const QString &imagePath);
+
 
 	Mesh *casaFox,*gramado, *ceu;
 	QTimer timer;
 	TrackBall trackBall;
 	int currentShader;
+
+	enum {
+		FLAT, GOURAUD, PHONG, TOON, HALFPHONG, TEXTURE, NORMAL
+	};
 };
 
 #endif // OPENGLWIDGET_H

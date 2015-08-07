@@ -16,11 +16,12 @@
         <file>halfphong.vert</file>
         <file>texture.frag</file>
         <file>texture.vert</file>
+        <file>normal.vert</file>
+        <file>normal.frag</file>
     </qresource>
     <qresource prefix="/textures">
-        <file>texture_01.jpg</file>
-        <file>texture_02.png</file>
-        <file>sky.jpg</file>
-        <file>grass.jpg</file>
+        <file>fox.jpg</file>
+        <file>grass_.jpg</file>
+        <file>sky_.jpg</file>
     </qresource>
 </RCC>

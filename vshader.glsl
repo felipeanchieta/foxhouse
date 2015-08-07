@@ -11,10 +11,12 @@ in vec3 normal;
 
 out vec4 v2fcolor;
 out vec4 inout_color;
+out vec4 position;
 
 void main()
 {
 	//v2fcolor = vec4(abs(vColors.x),abs(vColors.y),abs(vColors.z), 1);
 	inout_color = vec4(abs(normal), 1);
+        position = vPosition;
 	gl_Position = projectionMatrix*modelView*vPosition;
 }

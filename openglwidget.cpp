@@ -6,17 +6,13 @@ OpenGLWidget::OpenGLWidget(QWidget *parent) : QOpenGLWidget(parent)
 {
 	/* Alocação dos objetos na memória e definição das suas respectivas propriedades */
 
-	casaFox = new Mesh(0.0f, 2);
-	gramado = new Mesh(-0.21f, 5);
-	ceu = new Mesh(0.0f, 5);
+	casaFox = new Mesh(0.0f, TEXTURE);
+	gramado = new Mesh(-0.21f, TEXTURE);
+	ceu = new Mesh(0.0f, TEXTURE);
 
 	casaFox->material.diffuse = QVector4D(0.8f, 0.2f, 0.2f, 0.8f);
-	gramado->material.diffuse = QVector4D(0.2f, 1.0f, 0.2f, 1);
+	gramado->material.diffuse = QVector4D(1, 1, 1, 1);
 	ceu->material.diffuse = QVector4D(0.9f, 0.9f, 0.98f, 1.0f);
-
-	gramado->image = QImage(":/textures/grass.jpg");
-	ceu->image = QImage(":/textures/sky.jpg");
-
 }
 
 OpenGLWidget::~OpenGLWidget()
@@ -41,6 +37,7 @@ OpenGLWidget::~OpenGLWidget()
 void OpenGLWidget::initializeGL()
 {
 	initializeOpenGLFunctions();
+	//	std::cerr << "Seu dispositivo não possui suporte ao OpenGL 3.3, invista numa placa de vídeo melhor\n";
 
 	std::cout << "Versão do OpenGL: \t"	<< glGetString(GL_VERSION) << std::endl;
 	std::cout << "Versão do GLSL: \t"	<< glGetString(GL_SHADING_LANGUAGE_VERSION) << std::endl;
@@ -52,6 +49,10 @@ void OpenGLWidget::initializeGL()
 	casaFox->newMesh("../foxhouse/fox.off");
 	gramado->newMesh("../foxhouse/chao_.off");
 	ceu->newMesh("../foxhouse/ceu.off");
+
+	createTexture(casaFox, ":/textures/fox.jpg");
+	createTexture(gramado, ":/textures/grass_.jpg");
+	createTexture(ceu, ":/textures/sky_.jpg");
 
 	connect(&timer, SIGNAL(timeout()), this, SLOT(animate()));
 	timer.start(5);
@@ -72,7 +73,7 @@ void OpenGLWidget::resizeGL(int w, int h)
 	ceu->projectionMatrix.setToIdentity();
 	ceu->projectionMatrix.perspective(60.0, static_cast<qreal>(w)/static_cast<qreal>(h), 0.1, 20.0);
 
-	/* O céu é poupado da trackball por estatico na cena */
+	/* O céu é poupado da trackball por ser estatico na cena */
 
 	gramado->trackBall.resizeViewport(w, h);
 	casaFox->trackBall.resizeViewport(w, h);
@@ -88,8 +89,9 @@ void OpenGLWidget::paintGL()
 
 	/* Desenha os objetos de cena com seus respectivos métodos */
 	casaFox->drawMesh(QVector3D(0, 0, 0));
-	gramado->drawMesh(QVector3D(PLANESCALE, 0, PLANESCALE));
-	ceu->drawMesh(QVector3D(5*PLANESCALE, 5*PLANESCALE, 5*PLANESCALE));
+	gramado->drawMesh(QVector3D(0.2*PLANESCALE, 0, 0.2*PLANESCALE));
+	ceu->drawMesh(QVector3D(20*PLANESCALE, 20*PLANESCALE, 20*PLANESCALE));
+
 
 	update();
 }
@@ -207,5 +209,34 @@ void OpenGLWidget::takeScreenshot()
 									 "Screenshot",
 									 "Screenshot taken!",
 									 QMessageBox::Ok);
+	}
+}
+
+void OpenGLWidget::createTexture(Mesh *mesh, const QString &imagePath)
+{
+	makeCurrent();
+
+	mesh->image.load(imagePath);
+	mesh->texture = new QOpenGLTexture(mesh->image);
+
+	if (mesh->texture) {
+		mesh->texture->setMinificationFilter(QOpenGLTexture::LinearMipMapLinear);
+		mesh->texture->setMagnificationFilter(QOpenGLTexture::Linear);
+		mesh->texture->setWrapMode(QOpenGLTexture::MirroredRepeat);
+	}
+}
+
+/* esse método funciona mas não consegui implementar totalmente o NormalMapping */
+void OpenGLWidget::createNormalTexture(Mesh *mesh, const QString &imagePath)
+{
+	makeCurrent();
+
+	mesh->image.load(imagePath);
+	mesh->normalTexture = new QOpenGLTexture(mesh->image);
+
+	if (mesh->normalTexture) {
+		mesh->normalTexture->setMinificationFilter(QOpenGLTexture::LinearMipMapLinear);
+		mesh->normalTexture->setMagnificationFilter(QOpenGLTexture::Linear);
+		mesh->normalTexture->setWrapMode(QOpenGLTexture::Repeat);
 	}
 }

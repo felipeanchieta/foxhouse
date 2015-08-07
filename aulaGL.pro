@@ -50,4 +50,6 @@ DISTFILES += \
     halfphong.frag \
     halfphong.vert \
     texture.frag \
-    texture.vert
+    texture.vert \
+    normal.vert \
+    normal.frag

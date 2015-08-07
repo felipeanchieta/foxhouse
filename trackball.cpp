@@ -23,9 +23,6 @@ void TrackBall::mouseMove(const QPointF &p)
 		else
 			currentPos3D.setZ(sqrt(1.0 - lenSqr));
 
-		/*      (lenSqr >= 1.0) ? currentPos3D.normalize() :
-						  currentPos3D.setZ(sqrt(1.0 - lenSqr)); */
-
 		axis = QVector3D::crossProduct(lastPos3D, currentPos3D);
 		double angle = rad2deg * axis.length();
 		velocity = angle / msecs;
@@ -54,6 +51,7 @@ void TrackBall::mousePress(const QPointF &p)
 void TrackBall::mouseRelease(const QPointF &p)
 {
 	mouseMove(p);
+	/* Trava mouse */
 //	trackingMouse = false;
 }
 

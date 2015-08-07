@@ -20,60 +20,63 @@ class Mesh : public QOpenGLWidget
 public:
 	Mesh(float, int);
 	~Mesh();
+
 	void drawMesh(QVector3D scale);
+	/* void createTexture(const QString &imagePath); */
 
-	QOpenGLShader *vertexShader;
-	QOpenGLShader *fragmentShader;
 
-	QOpenGLBuffer *vboVertices;
-	QOpenGLBuffer *vboIndices;
-	QOpenGLBuffer *vboColors;
-	QOpenGLBuffer *vboNormals;
-	QOpenGLBuffer *vboCoordTex;
-	QOpenGLVertexArrayObject *vaoObject;
-
-	QOpenGLTexture *texture;
-	QOpenGLTexture *colorTexture;
-	QOpenGLTexture *colorTextureLayer;
-	QImage image;
-	QVector4D *vertices;
-	QVector4D *colors;
-	QVector3D *normals;
-	unsigned int *indices;
-	uint numVertices;
-	uint numFaces;
-	QMatrix4x4 modelView, projectionMatrix;
-	QVector3D midPoint;
-
+	/* Variáveis públicas */
 	Camera camera;
 	Material material;
 	Light light;
-	double zoomNS, zoomEW, invDiag, angle;
-	QOpenGLShaderProgram *shaderProgram;
-
-	float vPos;
-	QString shader;
-
+	QImage image;
 	TrackBall trackBall;
+	double zoomNS, zoomEW, invDiag, angle;
+	QMatrix4x4 modelView, projectionMatrix;
 
-	QVector3D colorMaterial;
+	float vPos; /* Posição vertical */
+	//QString shader;
 	QVector2D *texCoords;
 
-	void createVAO();
-	void destroyVAO();
 	void newMesh(QString fileName);
-	void createShaders();
-	void destroyShaders();
-	void calculateNormal();
-	void genTexCoordsCylinder();
-
 	int currentShader;
-	void createTexture(const QString &imagePath);
+
+
+	/* Texturas */
+	QOpenGLTexture *texture, *colorTexture, *normalTexture, *colorTextureLayer;
 
 
 private:
 
+	/* VBOs e VAO */
+	QOpenGLBuffer	*vboVertices, *vboIndices, *vboColors,
+					*vboNormals, *vboCoordTex, *vboTangents;
+
+	QOpenGLVertexArrayObject *vaoObject;
+
+	/* Shaders */
+	QOpenGLShader *vertexShader, *fragmentShader;
+	QOpenGLShaderProgram *shaderProgram;
+
+	enum {
+		FLAT, GOURAUD, PHONG, TOON, HALFPHONG, TEXTURE, NORMAL
+	};
+
+
+	/* Varíaveis privadas */
+	QVector4D *tangents, *vertices, *colors;
+	QVector3D *normals, midPoint;
+	uint *indices, numVertices, numFaces;
 	bool isUsingTextures;
+
+	/* Métodos */
+	void createVAO();
+	void destroyVAO();
+	void createShaders();
+	void destroyShaders();
+	void calculateNormal();
+	void genTexCoordsCylinder();
+	void genTangents();
 };
 
 #endif // MESH_H

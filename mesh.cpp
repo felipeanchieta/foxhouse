@@ -21,10 +21,8 @@ Mesh::Mesh(float zPosition, int _currentShader)
 	fragmentShader = NULL;
 	shaderProgram = NULL;
 
-	colorMaterial = QVector3D(0,0,0);
 	angle = .0f;
 	currentShader = _currentShader;
-	//this->shader = shader;
 
 	vPos = zPosition;
 }
@@ -51,8 +49,6 @@ void Mesh::drawMesh(QVector3D scale)
 	modelView.scale(invDiag + scale.x(), invDiag + scale.y(), invDiag + scale.z());
 	modelView.translate(- midPoint);
 
-
-
 	shaderProgram->bind();
 	vaoObject->bind();
 
@@ -64,10 +60,14 @@ void Mesh::drawMesh(QVector3D scale)
 	shaderProgram->enableAttributeArray("vcoordText") ;
 	shaderProgram->setAttributeBuffer("vcoordText", GL_FLOAT, 0, 2, 0);
 
-
-	colorTexture = new QOpenGLTexture(image);
-	colorTexture->bind(0);
+	texture->bind(0);
 	shaderProgram->setUniformValue("colorTexture", 0);
+
+
+//	if (currentShader == NORMAL) {
+//		normalTexture->bind(1);
+//		shaderProgram->setUniformValue("normalTexture", 1);
+//	}
 
 	shaderProgram->setUniformValue("lightPosition", light.position);
 	shaderProgram->setUniformValue("ambientProduct", ambientProduct);
@@ -88,6 +88,10 @@ void Mesh::drawMesh(QVector3D scale)
 	shaderProgram->enableAttributeArray("vNormal");
 	shaderProgram->setAttributeArray("vNormal", GL_FLOAT, 0, 3, 0);
 
+	vboTangents->bind();
+	shaderProgram->enableAttributeArray("vTangent");
+	shaderProgram->setAttributeArray("vTangent", GL_FLOAT, 0, 4, 0);
+
 	vboIndices->bind();
 
 	glDrawElements(GL_TRIANGLES, numFaces * 3, GL_UNSIGNED_INT, 0);
@@ -103,7 +107,13 @@ void Mesh::drawMesh(QVector3D scale)
 		colorTexture = NULL;
 	}
 
-//	vboCoordTex->release();
+	if (normalTexture) {
+		normalTexture->release(1);
+		delete normalTexture;
+		normalTexture = NULL;
+	}
+
+	vboCoordTex->release();
 	vaoObject->release();
 	shaderProgram->release();
 
@@ -140,6 +150,12 @@ void Mesh::destroyVAO()
 		vboCoordTex->release();
 		delete vboCoordTex;
 		vboCoordTex = NULL;
+	}
+
+	if (vboTangents) {
+		vboTangents->release();
+		delete vboTangents;
+		vboTangents = NULL;
 	}
 
 	if (vaoObject) {
@@ -188,6 +204,14 @@ void Mesh::createVAO()
 	vboCoordTex->allocate(texCoords, numVertices * sizeof(QVector2D));
 	delete[] texCoords;
 	texCoords = NULL;
+
+	vboTangents = new QOpenGLBuffer(QOpenGLBuffer::VertexBuffer);
+	vboTangents->create();
+	vboTangents->bind();
+	vboTangents->setUsagePattern(QOpenGLBuffer::StaticDraw);
+	vboTangents->allocate(tangents, numFaces * sizeof(QVector4D));
+	delete [] tangents;
+	tangents = NULL;
 
 	vboIndices = new QOpenGLBuffer(QOpenGLBuffer::IndexBuffer);
 	vboIndices ->create();
@@ -277,6 +301,7 @@ void Mesh::newMesh(QString fileName)
 	stream.close();
 	calculateNormal();
 	genTexCoordsCylinder();
+	genTangents();
 
 	createVAO();
 	createShaders();
@@ -370,21 +395,6 @@ void Mesh::createShaders()
 		qWarning() << shaderProgram->log() << endl;
 }
 
-void Mesh::createTexture(const QString &imagePath)
-{
-	makeCurrent();
-
-	image.load(imagePath);
-	texture = new QOpenGLTexture(image);
-
-	if (texture) {
-		texture->setMinificationFilter(QOpenGLTexture::LinearMipMapLinear);
-		texture->setMagnificationFilter(QOpenGLTexture::Linear);
-		texture->setWrapMode(QOpenGLTexture::Repeat);
-	}
-
-}
-
 /* Texture cilíndrica */
 void Mesh::genTexCoordsCylinder()
 {
@@ -410,4 +420,72 @@ void Mesh::genTexCoordsCylinder()
 		float t = 1.0f -(vertices[i].z()- minz)/(maxz - minz);
 		texCoords[i] = QVector2D(s,t);
 	}
+}
+
+/* Normal mapping */
+void Mesh::genTangents()
+{
+	uint i;
+
+	if (tangents) {
+		delete [] tangents;
+		tangents = NULL;
+	}
+
+	tangents = new QVector4D[numVertices];
+	QVector3D *bitangents = new QVector3D[numVertices];
+
+	for (i = 0; i < numFaces; i++) {
+
+		uint i1 = indices[i * 3];
+		uint i2 = indices[i * 3 + 1];
+		uint i3 = indices[i * 3 + 2];
+
+		QVector3D E = vertices[i1].toVector3D();
+		QVector3D F = vertices[i2].toVector3D();
+		QVector3D G = vertices[i3].toVector3D();
+
+
+		QVector2D stE = texCoords[i1];
+		QVector2D stF = texCoords[i2];
+		QVector2D stG = texCoords[i3];
+
+		QVector3D P = F - E;
+		QVector3D Q = G - E;
+
+		QVector2D st1 = stF - stE;
+		QVector2D st2 = stG - stE;
+
+		QMatrix2x2 M ;
+		M(0, 0) = st2.y();
+		M(0, 1) = -st1.y();
+		M(1, 0) = -st2.x();
+		M(1, 1) = st1.x();
+		M *= (1.0 / ( st1.x() * st2.y() - st2.x() * st1.y())) ;
+		QVector4D T = QVector4D (M(0, 0) * P.x() + M(0, 1) * Q.x(),
+		M (0, 0) * P.y() + M (0, 1) * Q.y(),
+		M (0, 0) * P.z() + M (0, 1) * Q.z(), 0.0);
+
+		QVector3D B = QVector3D (M (1, 0) * P.x() + M (1, 1) * Q.x(),
+		M (1, 0) * P.y() + M (1, 1) * Q.y() ,
+		M (1, 0) * P.z() + M (1, 1) * Q.z()) ;
+
+		tangents[i1] += T;
+		tangents[i2] += T;
+		tangents[i3] += T;
+		bitangents[i1] += B;
+		bitangents[i2] += B;
+		bitangents[i3] += B;
+	}
+
+	for (i = 0; i < numVertices ; i++) {
+		const QVector3D &n = normals[i];
+		const QVector4D &t = tangents[i];
+		tangents [i] = (t - n * QVector3D::dotProduct(n, t.toVector3D())).normalized();
+		QVector3D b = QVector3D::crossProduct(n, t.toVector3D());
+		double hand = QVector3D::dotProduct(b, bitangents[i]);
+		tangents[i].setW((hand < 0.0) ? -1.0 : 1.0) ;
+	}
+
+	delete [] bitangents;
 }

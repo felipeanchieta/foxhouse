@@ -22,7 +22,6 @@ void main()
 	fN = normalMatrix * vNormal;
 	fL = lightPosition.xyz - eyePosition.xyz;
 	fE = -eyePosition.xyz;
-
 	fTextCoord = vcoordText;
 	gl_Position = projectionMatrix * eyePosition;
 }
